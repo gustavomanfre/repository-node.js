@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tipos Primitivos JavaScript</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #1e3c72 0%, #2a5298 50%, #4f8fd7 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            color: #1e3c72;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .version-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .version-card {
+            background: #f8f9ff;
+            border: 3px solid;
+            border-radius: 15px;
+            padding: 25px;
+            position: relative;
+        }
+
+        .es5-card {
+            border-color: #2a5298;
+        }
+
+        .es6-card {
+            border-color: #4f8fd7;
+        }
+
+        .version-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            color: white;
+        }
+
+        .es5-card h3 {
+            background: #2a5298;
+        }
+
+        .es6-card h3 {
+            background: #4f8fd7;
+        }
+
+        .primitive-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .primitive-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .es5-card .primitive-item {
+            border-left-color: #2a5298;
+            color: #2a5298;
+        }
+
+        .es6-card .primitive-item {
+            border-left-color: #4f8fd7;
+            color: #4f8fd7;
+        }
+
+        .new-badge {
+            background: #ff6b6b;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .detailed-section {
+            margin-top: 50px;
+        }
+
+        .primitive-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .primitive-card:hover {
+            border-color: #1e3c72;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            transform: translateY(-4px);
+        }
+
+        .primitive-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .primitive-name {
+            font-size: 1.8rem;
+            color: #1e3c72;
+            font-weight: 700;
+            background: #f0f4ff;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .primitive-description {
+            font-size: 1.1rem;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .examples-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .example-box {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        .example-title {
+            color: #00aaff;
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .typeof-result {
+            color: #ffaa00;
+        }
+
+        .comment {
+            color: #888;
+        }
+
+        .error {
+            color: #ff6b6b;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 4px solid #fdcb6e;
+        }
+
+        .warning-box h4 {
+            color: #856404;
+            margin-bottom: 8px;
+        }
+
+        .warning-box p {
+            color: #856404;
+            margin: 0;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 768px) {
+            .version-comparison,
+            .examples-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Tipos Primitivos en JavaScript</h1>
+            <p>Comparación completa ES5 vs ES6 con ejemplos prácticos</p>
+        </div>
+
+        <div class="content">
+            <h2 class="section-title">Tipos Primitivos: ES5 vs ES6</h2>
+            
+            <div class="version-comparison">
+                <div class="version-card es5-card">
+                    <h3>ES5 (2009)</h3>
+                    <div class="primitive-list">
+                        <div class="primitive-item">string</div>
+                        <div class="primitive-item">number</div>
+                        <div class="primitive-item">boolean</div>
+                        <div class="primitive-item">undefined</div>
+                        <div class="primitive-item">null</div>
+                    </div>
+                </div>
+
+                <div class="version-card es6-card">
+                    <h3>ES6/ES2015 (2015)</h3>
+                    <div class="primitive-list">
+                        <div class="primitive-item">string</div>
+                        <div class="primitive-item">number</div>
+                        <div class="primitive-item">boolean</div>
+                        <div class="primitive-item">undefined</div>
+                        <div class="primitive-item">null</div>
+                        <div class="primitive-item">symbol <span class="new-badge">NUEVO</span></div>
+                        <div class="primitive-item">bigint <span class="new-badge">ES2020</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detailed-section">
+                <h2 class="section-title">Explicación Detallada con Ejemplos</h2>
+
+                <!-- STRING -->
+                <div class="primitive-card">
+                    <div class="primitive-header">
+                        <div class="primitive-name">string</div>
+                    </div>
+                    <div class="primitive-description">
+                        Representa una secuencia de caracteres. En JavaScript, los strings son inmutables y pueden crearse con comillas simples, dobles o backticks (ES6).
+                    </div>
+                    <div class="examples-section">
+                        <div>
+                            <div class="example-box">
+                                <div class="example-title">// Ejemplos básicos</div>
+                                <div>let nombre = "Juan";</div>
+                                <div>let apellido = 'Pérez';</div>
+                                <div>let saludo = `Hola ${nombre}`; <span class="comment">// ES6</span></div>
+                                <br>
+                                <div><span class="typeof-result">typeof nombre;</span> <span class="comment">// "string"</span></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="example-box">
+                                <div class="example-title">// Métodos comunes</div>
+                                <div>nombre.length; <span class="comment">// 4</span></div>
+                                <div>nombre.toUpperCase(); <span class="comment">// "JUAN"</span></div>
+                                <div>nombre.charAt(0); <span class="comment">// "J"</span></div>
+                                <div>nombre.includes("ua"); <span class="comment">// true</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NUMBER -->
+                <div class="primitive-card">
+                    <div class="primitive-header">
+                        <div class="primitive-name">number</div>
+                    </div>
+                    <div class="primitive-description">
+                        Representa tanto números enteros como decimales. JavaScript usa punto flotante de doble precisión (64 bits) para todos los números.
+                    </div>
+                    <div class="examples-section">
+                        <div>
+                            <div class="example-box">
+                                <div class="example-title">// Números válidos</div>
+                                <div>let entero = 42;</div>
+                                <div>let decimal = 3.14159;</div>
+                                <div>let negativo = -17;</div>
+                                <div>let cientifico = 1.5e6; <span class="comment">// 1500000</span></div>
+                                <br>
+                                <div><span class="typeof-result">typeof entero;</span> <span class="comment">// "number"</span></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="example-box">
+                                <div class="example-title">// Valores especiales</div>
+                                <div>let infinito = Infinity;</div>
+                                <div>let noEsNumero = NaN;</div>
+                                <div>0 / 0; <span class="comment">// NaN</span></div>
+                                <div>1 / 0; <span class="comment">// Infinity</span></div>
+                                <br>
+                                <div>isNaN(NaN); <span class="comment">// true</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>⚠️ Importante:</h4>
+                        <p>NaN NO es un tipo primitivo separado, es un valor especial del tipo number que significa "Not a Number".</p>
+                    </div>
+                </div>
+
+                <!-- BOOLEAN -->
+                <div class="primitive-card">
+                    <div class="primitive-header">
+                        <div class="primitive-name">boolean</div>
+                    </div>
+                    <div class="primitive-description">
+                        Representa valores lógicos: verdadero (true) o falso (false). Se usa principalmente en condiciones y operaciones lógicas.
+                    </div>
+                    <div class="examples-section">
+                        <div>
+                            <div class="example-box">
+                                <div class="example-title">// Valores booleanos</div>
+                                <div>let esVerdadero = true;</div>
+                                <div>let esFalso = false;</div>
+                                <br>
+                                <div><span class="typeof-result">typeof esVerdadero;</span> <span class="comment">// "boolean"</span></div>
+                                <br>
+                                <div>!true; <span class="comment">// false</span></div>
+                                <div>!false; <span class="comment">// true</span></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="example-box">
+                                <div class="example-title">// Conversión implícita</div>
+                                <div>Boolean(""); <span class="comment">// false</span></div>
+                                <div>Boolean("texto"); <span class="comment">// true</span></div>
+                                <div>Boolean(0); <span class="comment">// false</span></div>
+                                <div>Boolean(42); <span class="comment">// true</span></div>
+                                <div>Boolean(null); <span class="comment">// false</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- UNDEFINED -->
+                <div class="primitive-card">
+                    <div class="primitive-header">
+                        <div class="primitive-name">undefined</div>
+                    </div>
+                    <div class="primitive-description">
+                        Representa una variable que ha sido declarada pero no se le ha asignado un valor, o un valor que no existe.
+                    </div>
+                    <div class="examples-section">
+                        <div>
+                            <div class="example-box">
+                                <div class="example-title">// Casos de undefined</div>
+                                <div>let sinValor;</div>
+                                <div>console.log(sinValor); <span class="comment">// undefined</span></div>
+                                <br>
+                                <div>let obj = {};</div>
+                                <div>obj.propiedadInexistente; <span class="comment">// undefined</span></div>
+                                <br>
+                                <div><span class="typeof-result">typeof undefined;</span> <span class="comment">// "undefined"</span></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="example-box">
+                                <div class="example-title">// Función sin return</div>
+                                <div>function sinReturn() {</div>
+                                <div>  console.log("Hola");</div>
+                                <div>}</div>
+                                <br>
+                                <div>let resultado = sinReturn();</div>
+                                <div>console.log(resultado); <span class="comment">// undefined</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NULL -->
+                <div class="primitive-card">
+                    <div class="primitive-header">
+                        <div class="primitive-name">null</div>
+                    </div>
+                    <div class="primitive-description">
+                        Representa la ausencia intencional de cualquier valor de objeto. Es un valor primitivo que significa "vacío" o "sin valor".
+                    </div>
+                    <div class="examples-section">
+                        <div>
+                            <div class="example-box">
+                                <div class="example-title">// Uso de null</div>
+                                <div>let valorNulo = null;</div>
+                                <div>console.log(valorNulo); <span class="comment">// null</span></div>
+                                <br>
+                                <div>null == undefined; <span class="comment">// true</span></div>
+                                <div>null === undefined; <span class="comment">// false</span></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="example-box">
+                                <div class="example-title">// Bug histórico</div>
+                                <div><span class="typeof-result">typeof null;</span> <span class="comment">// "object" ⚠️</span></div>
+                                <div><span class="error">// Esto es un bug histórico</span></div>
+                                <div><span class="error">// null ES un primitivo</span></div>
+                                <br>
+                                <div>null instanceof Object; <span class="comment">// false</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>⚠️ Bug Histórico:</h4>
+                        <p>typeof null devuelve "object", pero null ES un tipo primitivo. Este es un bug conocido que se mantiene por compatibilidad.</p>
+                    </div>
+                </div>
+
+                <!-- SYMBOL (ES6) -->
+                <div class="primitive-card">
+                    <div class="primitive-header">
+                        <div class="primitive-name">symbol</div>
+                        <span class="new-badge">ES6/ES2015</span>
+                    </div>
+                    <div class="primitive-description">
+                        Introduce un nuevo tipo primitivo que representa un identificador único. Se usa principalmente para crear propiedades de objeto que no colisionen.
+                    </div>
+                    <div class="examples-section">
+                        <div>
+                            <div class="example-box">
+                                <div class="example-title">// Creación de symbols</div>
+                                <div>let sym1 = Symbol();</div>
+                                <div>let sym2 = Symbol("descripcion");</div>
+                                <div>let sym3 = Symbol("descripcion");</div>
+                                <br>
+                                <div>sym2 === sym3; <span class="comment">// false</span></div>
+                                <div><span class="typeof-result">typeof sym1;</span> <span class="comment">// "symbol"</span></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="example-box">
+                                <div class="example-title">// Uso en objetos</div>
+                                <div>let obj = {};</div>
+                                <div>let propiedadUnica = Symbol("prop");</div>
+                                <br>
+                                <div>obj[propiedadUnica] = "valor secreto";</div>
+                                <div>obj.propNormal = "valor normal";</div>
+                                <br>
+                                <div>Object.keys(obj); <span class="comment">// ["propNormal"]</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BIGINT (ES2020) -->
+                <div class="primitive-card">
+                    <div class="primitive-header">
+                        <div class="primitive-name">bigint</div>
+                        <span class="new-badge">ES2020</span>
+                    </div>
+                    <div class="primitive-description">
+                        Permite representar números enteros de precisión arbitraria, superando la limitación de Number.MAX_SAFE_INTEGER.
+                    </div>
+                    <div class="examples-section">
+                        <div>
+                            <div class="example-box">
+                                <div class="example-title">// Creación de BigInt</div>
+                                <div>let numeroGrande = 123456789012345678901234567890n;</div>
+                                <div>let otraForma = BigInt("123456789012345678901234567890");</div>
+                                <br>
+                                <div><span class="typeof-result">typeof numeroGrande;</span> <span class="comment">// "bigint"</span></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="example-box">
+                                <div class="example-title">// Limitaciones</div>
+                                <div>Number.MAX_SAFE_INTEGER; <span class="comment">// 9007199254740991</span></div>
+                                <div>let seguro = 9007199254740991n;</div>
+                                <br>
+                                <div><span class="error">// Error: no se puede mezclar</span></div>
+                                <div><span class="error">// 10n + 5; // TypeError</span></div>
+                                <div>10n + 5n; <span class="comment">// 15n ✓</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

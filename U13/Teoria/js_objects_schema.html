@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Objetos en JavaScript - Esquema</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .main-categories {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .category {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border-left: 5px solid;
+        }
+        
+        .native {
+            border-left-color: #4CAF50;
+        }
+        
+        .host {
+            border-left-color: #2196F3;
+        }
+        
+        .category-title {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .native .category-title {
+            color: #4CAF50;
+        }
+        
+        .host .category-title {
+            color: #2196F3;
+        }
+        
+        .icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .native .icon {
+            background: #4CAF50;
+        }
+        
+        .host .icon {
+            background: #2196F3;
+        }
+        
+        .subcategory {
+            margin-bottom: 20px;
+        }
+        
+        .subcategory-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .subcategory-desc {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+        
+        .objects-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .object-tag {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .description {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+            font-style: italic;
+        }
+        
+        .host-environments {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .environment {
+            background: white;
+            border: 2px solid #e3f2fd;
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .environment-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #1976d2;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9em;
+        }
+        
+        .download-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1em;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .download-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
+        }
+        
+        @media (max-width: 768px) {
+            .main-categories {
+                grid-template-columns: 1fr;
+            }
+            
+            .host-environments {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="download-btn" onclick="downloadImage()">📥 Descargar Imagen</button>
+    
+    <div class="container" id="schema">
+        <div class="header">
+            <h1>🔧 Objetos en JavaScript</h1>
+            <p>Clasificación completa de objetos nativos y del host</p>
+        </div>
+        
+        <div class="content">
+            <div class="main-categories">
+                <!-- OBJETOS NATIVOS -->
+                <div class="category native">
+                    <div class="category-title">
+                        <div class="icon">N</div>
+                        Objetos Nativos (Built-in)
+                    </div>
+                    <div class="description">
+                        Parte del lenguaje JavaScript según ECMAScript. Disponibles en cualquier entorno.
+                    </div>
+                    
+                    <div class="subcategory">
+                        <div class="subcategory-title">🏗️ Fundamentales</div>
+                        <div class="subcategory-desc">Tipos de datos básicos y construcción de objetos</div>
+                        <div class="objects-list">
+                            <span class="object-tag">Object</span>
+                            <span class="object-tag">Function</span>
+                            <span class="object-tag">Array</span>
+                            <span class="object-tag">String</span>
+                            <span class="object-tag">Number</span>
+                            <span class="object-tag">Boolean</span>
+                            <span class="object-tag">Symbol</span>
+                            <span class="object-tag">BigInt</span>
+                        </div>
+                    </div>
+                    
+                    <div class="subcategory">
+                        <div class="subcategory-title">⚠️ Errores</div>
+                        <div class="subcategory-desc">Manejo y tipos de errores en JavaScript</div>
+                        <div class="objects-list">
+                            <span class="object-tag">Error</span>
+                            <span class="object-tag">TypeError</span>
+                            <span class="object-tag">ReferenceError</span>
+                            <span class="object-tag">SyntaxError</span>
+                        </div>
+                    </div>
+                    
+                    <div class="subcategory">
+                        <div class="subcategory-title">📅 Fecha y Tiempo</div>
+                        <div class="subcategory-desc">Manipulación de fechas y horarios</div>
+                        <div class="objects-list">
+                            <span class="object-tag">Date</span>
+                        </div>
+                    </div>
+                    
+                    <div class="subcategory">
+                        <div class="subcategory-title">🔍 Expresiones Regulares</div>
+                        <div class="subcategory-desc">Patrones de búsqueda y validación de texto</div>
+                        <div class="objects-list">
+                            <span class="object-tag">RegExp</span>
+                        </div>
+                    </div>
+                    
+                    <div class="subcategory">
+                        <div class="subcategory-title">📦 Colecciones</div>
+                        <div class="subcategory-desc">Estructuras de datos avanzadas (ES6+)</div>
+                        <div class="objects-list">
+                            <span class="object-tag">Map</span>
+                            <span class="object-tag">Set</span>
+                            <span class="object-tag">WeakMap</span>
+                            <span class="object-tag">WeakSet</span>
+                        </div>
+                    </div>
+                    
+                    <div class="subcategory">
+                        <div class="subcategory-title">🧮 Utilidades</div>
+                        <div class="subcategory-desc">Matemáticas y serialización de datos</div>
+                        <div class="objects-list">
+                            <span class="object-tag">JSON</span>
+                            <span class="object-tag">Math</span>
+                        </div>
+                    </div>
+                    
+                    <div class="subcategory">
+                        <div class="subcategory-title">⚡ Asíncronos</div>
+                        <div class="subcategory-desc">Programación asíncrona y concurrencia</div>
+                        <div class="objects-list">
+                            <span class="object-tag">Promise</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- OBJETOS DEL HOST -->
+                <div class="category host">
+                    <div class="category-title">
+                        <div class="icon">H</div>
+                        Objetos del Host
+                    </div>
+                    <div class="description">
+                        Proporcionados por el entorno de ejecución (navegador, Node.js, etc.)
+                    </div>
+                    
+                    <div class="host-environments">
+                        <div class="environment">
+                            <div class="environment-title">
+                                🌐 Navegador (Browser)
+                            </div>
+                            <div class="subcategory">
+                                <div class="subcategory-title">Globales</div>
+                                <div class="subcategory-desc">Objetos globales del navegador</div>
+                                <div class="objects-list">
+                                    <span class="object-tag">window</span>
+                                    <span class="object-tag">document</span>
+                                    <span class="object-tag">console</span>
+                                </div>
+                            </div>
+                            <div class="subcategory">
+                                <div class="subcategory-title">Almacenamiento</div>
+                                <div class="subcategory-desc">Persistencia de datos local</div>
+                                <div class="objects-list">
+                                    <span class="object-tag">localStorage</span>
+                                    <span class="object-tag">sessionStorage</span>
+                                </div>
+                            </div>
+                            <div class="subcategory">
+                                <div class="subcategory-title">Red</div>
+                                <div class="subcategory-desc">Comunicación HTTP y APIs</div>
+                                <div class="objects-list">
+                                    <span class="object-tag">XMLHttpRequest</span>
+                                    <span class="object-tag">fetch</span>
+                                </div>
+                            </div>
+                            <div class="subcategory">
+                                <div class="subcategory-title">Tiempo</div>
+                                <div class="subcategory-desc">Temporizadores y intervalos</div>
+                                <div class="objects-list">
+                                    <span class="object-tag">setTimeout</span>
+                                    <span class="object-tag">setInterval</span>
+                                </div>
+                            </div>
+                            <div class="subcategory">
+                                <div class="subcategory-title">DOM</div>
+                                <div class="subcategory-desc">Manipulación del Document Object Model</div>
+                                <div class="objects-list">
+                                    <span class="object-tag">HTMLElement</span>
+                                    <span class="object-tag">Node</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="environment">
+                            <div class="environment-title">
+                                🖥️ Node.js
+                            </div>
+                            <div class="subcategory">
+                                <div class="subcategory-title">Globales</div>
+                                <div class="subcategory-desc">Objetos globales de Node.js</div>
+                                <div class="objects-list">
+                                    <span class="object-tag">global</span>
+                                    <span class="object-tag">process</span>
+                                    <span class="object-tag">Buffer</span>
+                                    <span class="object-tag">console</span>
+                                </div>
+                            </div>
+                            <div class="subcategory">
+                                <div class="subcategory-title">Módulos</div>
+                                <div class="subcategory-desc">Sistema de módulos CommonJS</div>
+                                <div class="objects-list">
+                                    <span class="object-tag">require</span>
+                                    <span class="object-tag">module</span>
+                                    <span class="object-tag">exports</span>
+                                </div>
+                            </div>
+                            <div class="subcategory">
+                                <div class="subcategory-title">Módulos Built-in</div>
+                                <div class="subcategory-desc">Módulos nativos del sistema</div>
+                                <div class="objects-list">
+                                    <span class="object-tag">fs</span>
+                                    <span class="object-tag">http</span>
+                                    <span class="object-tag">path</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="subcategory" style="margin-top: 20px;">
+                        <div class="subcategory-title">👨‍💻 Definidos por el Usuario</div>
+                        <div class="subcategory-desc">Objetos creados por el desarrollador</div>
+                        <div class="objects-list">
+                            <span class="object-tag">Constructores</span>
+                            <span class="object-tag">Clases</span>
+                            <span class="object-tag">Literales de Objeto</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Nota:</strong> Los objetos nativos están garantizados por la especificación ECMAScript, mientras que los objetos del host dependen del entorno específico de ejecución.</p>
+        </div>
+    </div>
+
+    <script>
+        function downloadImage() {
+            // Crear un canvas
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Obtener el elemento del esquema
+            const element = document.getElementById('schema');
+            
+            // Usar html2canvas (agregamos la librería)
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+            script.onload = function() {
+                html2canvas(element, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff'
+                }).then(canvas => {
+                    // Crear enlace de descarga
+                    const link = document.createElement('a');
+                    link.download = 'objetos-javascript-esquema.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                });
+            };
+            document.head.appendChild(script);
+        }
+        
+        // Agregar efectos de hover suaves
+        document.addEventListener('DOMContentLoaded', function() {
+            const tags = document.querySelectorAll('.object-tag');
+            tags.forEach(tag => {
+                tag.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                    this.style.transition = 'all 0.2s ease';
+                });
+                tag.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

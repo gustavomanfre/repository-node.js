@@ -1,0 +1,683 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procesos de Aplicaciones de Software con Código</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .processes-container {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .process-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 3px solid;
+            position: relative;
+        }
+
+        .compiled { border-color: #3498db; }
+        .interpreted { border-color: #e74c3c; }
+        .transpiled { border-color: #f39c12; }
+
+        .process-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+        }
+
+        .compiled .process-title { background: #3498db; }
+        .interpreted .process-title { background: #e74c3c; }
+        .transpiled .process-title { background: #f39c12; }
+
+        .steps-flow {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: stretch;
+        }
+
+        .step-card {
+            flex: 1;
+            min-width: 280px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid;
+            position: relative;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .step-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .compiled .step-card { border-left-color: #3498db; }
+        .interpreted .step-card { border-left-color: #e74c3c; }
+        .transpiled .step-card { border-left-color: #f39c12; }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .step-number {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 12px;
+        }
+
+        .compiled .step-number { background: #3498db; }
+        .interpreted .step-number { background: #e74c3c; }
+        .transpiled .step-number { background: #f39c12; }
+
+        .step-title {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+
+        .step-description {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            overflow-x: auto;
+            margin: 10px 0;
+            border: 1px solid #4a5568;
+        }
+
+        .code-header {
+            background: #1a202c;
+            color: #cbd5e0;
+            padding: 8px 15px;
+            border-radius: 8px 8px 0 0;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin: 10px 0 0 0;
+        }
+
+        .code-block.with-header {
+            border-radius: 0 0 8px 8px;
+            margin-top: 0;
+        }
+
+        .transition-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 15px 0;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .transition-arrow.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .arrow-line {
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #95a5a6, transparent);
+            flex: 1;
+            margin: 0 10px;
+        }
+
+        .arrow-text {
+            background: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            color: #95a5a6;
+            border: 2px solid #ecf0f1;
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, #f1f3f4, #e8eaf0);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            border: 2px dashed #95a5a6;
+        }
+
+        .result-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .syntax-highlight .keyword { color: #ff6b6b; }
+        .syntax-highlight .string { color: #4ecdc4; }
+        .syntax-highlight .comment { color: #95a5a6; font-style: italic; }
+        .syntax-highlight .function { color: #ffe66d; }
+        .syntax-highlight .tag { color: #ff6b6b; }
+        .syntax-highlight .attribute { color: #4ecdc4; }
+
+        .tooltip {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #2c3e50 transparent transparent transparent;
+        }
+
+        .control-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .control-button {
+            padding: 10px 20px;
+            font-size: 1em;
+            font-weight: bold;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .compiled .control-button { background: #3498db; }
+        .compiled .control-button:hover { background: #2980b9; }
+        .interpreted .control-button { background: #e74c3c; }
+        .interpreted .control-button:hover { background: #c0392b; }
+        .transpiled .control-button { background: #f39c12; }
+        .transpiled .control-button:hover { background: #e67e22; }
+
+        @media (max-width: 1200px) {
+            .steps-flow {
+                flex-direction: column;
+            }
+            .step-card {
+                min-width: unset;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2em; }
+            .container { padding: 20px; }
+            .process-section { padding: 20px; }
+            .control-button { padding: 8px 15px; font-size: 0.9em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💻 Procesos de Aplicaciones con Ejemplos de Código</h1>
+        
+        <div class="processes-container">
+            
+            <!-- APLICACIONES COMPILADAS -->
+            <div class="process-section compiled">
+                <div class="process-title">📦 Aplicaciones Compiladas</div>
+                <div class="control-buttons">
+                    <button class="control-button" onclick="showNextStep('compiled')">Siguiente Paso</button>
+                    <button class="control-button" onclick="resetSteps('compiled')">Reiniciar</button>
+                </div>
+                <div class="steps-flow">
+                    <div class="step-card">
+                        <div class="step-header">
+                            <div class="step-number">1</div>
+                            <div class="step-title tooltip">Código Fuente
+                                <span class="tooltip-text">El código fuente es escrito por el programador en un lenguaje de alto nivel como C++. Es legible por humanos y contiene las instrucciones del programa.</span>
+                            </div>
+                        </div>
+                        <div class="step-description">Escribir código en lenguajes como C++, C#, o Java. Este paso involucra definir la lógica del programa en un entorno de desarrollo (IDE) o editor de texto.</div>
+                        <div class="code-header">📄 main.cpp</div>
+                        <div class="code-block with-header syntax-highlight">
+#include <iostream>
+using namespace std;
+
+int main() {
+    cout << "¡Hola Mundo!" << endl;
+    return 0;
+}
+                        </div>
+                    </div>
+
+                    <div class="transition-arrow">
+                        <div class="arrow-line"></div>
+                        <div class="arrow-text">COMPILA →</div>
+                        <div class="arrow-line"></div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-header">
+                            <div class="step-number">2</div>
+                            <div class="step-title tooltip">Compilación
+                                <span class="tooltip-text">El compilador traduce el código fuente a código máquina, verificando errores de sintaxis y generando un archivo binario intermedio u objeto.</span>
+                            </div>
+                        </div>
+                        <div class="step-description">El compilador (como g++) traduce el código fuente a código máquina específico para la plataforma (Windows, Linux, etc.). Este proceso incluye optimizaciones y verificaciones.</div>
+                        <div class="code-header">⚙️ Comando de compilación</div>
+                        <div class="code-block with-header">
+g++ -o programa main.cpp
+                        </div>
+                        <div class="transition-arrow">
+                            <div class="arrow-line"></div>
+                            <div class="arrow-text">GENERA →</div>
+                            <div class="arrow-line"></div>
+                        </div>
+                        <div class="code-header">🔧 Código máquina (representación)</div>
+                        <div class="code-block with-header">
+48 89 e5 48 83 ec 10 bf
+01 00 00 00 e8 f3 fe ff
+ff 31 c0 48 83 c4 10 5d
+c3 90 90 90 90 90 90 90
+                        </div>
+                    </div>
+
+                    <div class="transition-arrow">
+                        <div class="arrow-line"></div>
+                        <div class="arrow-text">ENLAZA →</div>
+                        <div class="arrow-line"></div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-header">
+                            <div class="step-number">3</div>
+                            <div class="step-title tooltip">Ejecutable
+                                <span class="tooltip-text">El archivo ejecutable es un programa listo para correr en el sistema operativo, combinando el código máquina con las librerías necesarias.</span>
+                            </div>
+                        </div>
+                        <div class="step-description">El archivo binario generado (ejecutable) contiene todo lo necesario para ejecutarse directamente en el sistema operativo, sin necesidad de un intérprete.</div>
+                        <div class="result-box">
+                            <div class="result-title">📦 Archivo generado:</div>
+                            <strong>programa.exe</strong> (Windows)<br>
+                            <strong>programa</strong> (Linux/Mac)<br><br>
+                            <strong>Ejecución:</strong> Doble clic o ./programa
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- APLICACIONES INTERPRETADAS -->
+            <div class="process-section interpreted">
+                <div class="process-title">🔍 Aplicaciones Interpretadas</div>
+                <div class="control-buttons">
+                    <button class="control-button" onclick="showNextStep('interpreted')">Siguiente Paso</button>
+                    <button class="control-button" onclick="resetSteps('interpreted')">Reiniciar</button>
+                </div>
+                <div class="steps-flow">
+                    <div class="step-card">
+                        <div class="step-header">
+                            <div class="step-number">1</div>
+                            <div class="step-title tooltip">Código Fuente
+                                <span class="tooltip-text">El código fuente en lenguajes como JavaScript o Python es escrito para ser interpretado directamente, sin una fase de compilación previa.</span>
+                            </div>
+                        </div>
+                        <div class="step-description">Código escrito en lenguajes como JavaScript o Python, diseñado para ser ejecutado línea por línea por un intérprete, como el motor de un navegador o el intérprete de Python.</div>
+                        <div class="code-header">📄 script.js</div>
+                        <div class="code-block with-header syntax-highlight">
+// JavaScript para página web
+function mostrarMensaje() {
+    const mensaje = "¡Hola desde JavaScript!";
+    document.getElementById("output").innerHTML = mensaje;
+}
+
+mostrarMensaje();
+                        </div>
+                    </div>
+
+                    <div class="transition-arrow">
+                        <div class="arrow-line"></div>
+                        <div class="arrow-text">CARGA →</div>
+                        <div class="arrow-line"></div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-header">
+                            <div class="step-number">2</div>
+                            <div class="step-title tooltip">Carga en Intérprete
+                                <span class="tooltip-text">El intérprete (como el motor JavaScript del navegador) lee el código fuente y lo prepara para ejecución directa, sin generar un archivo intermedio.</span>
+                            </div>
+                        </div>
+                        <div class="step-description">El navegador o entorno (como Node.js) carga el código fuente directamente, parseándolo y ejecutándolo sin necesidad de un archivo binario intermedio.</div>
+                        <div class="code-header">🌐 index.html</div>
+                        <div class="code-block with-header syntax-highlight">
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mi App</title>
+</head>
+<body>
+    <div id="output"></div>
+    <script src="script.js"></script>
+</body>
+</html>
+                        </div>
+                    </div>
+
+                    <div class="transition-arrow">
+                        <div class="arrow-line"></div>
+                        <div class="arrow-text">INTERPRETA →</div>
+                        <div class="arrow-line"></div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-header">
+                            <div class="step-number">3</div>
+                            <div class="step-title tooltip">Ejecución en Tiempo Real
+                                <span class="tooltip-text">El intérprete ejecuta el código línea por línea, mostrando resultados inmediatos en el entorno (como un navegador).</span>
+                            </div>
+                        </div>
+                        <div class="step-description">El intérprete ejecuta el código en tiempo real, procesando cada instrucción y mostrando los resultados directamente en el entorno (navegador, consola, etc.).</div>
+                        <div class="result-box">
+                            <div class="result-title">🖥️ Resultado en navegador:</div>
+                            <div style="border: 2px solid #e74c3c; padding: 15px; border-radius: 8px; background: white; margin-top: 10px;">
+                                <strong>¡Hola desde JavaScript!</strong>
+                            </div>
+                            <br><strong>Proceso:</strong> Sin archivos compilados, ejecución directa del código fuente
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- APLICACIONES TRANSPILADAS -->
+            <div class="process-section transpiled">
+                <div class="process-title">🔄 Aplicaciones Transpiladas</div>
+                <div class="control-buttons">
+                    <button class="control-button" onclick="showNextStep('transpiled')">Siguiente Paso</button>
+                    <button class="control-button" onclick="resetSteps('transpiled')">Reiniciar</button>
+                </div>
+                <div class="steps-flow">
+                    <div class="step-card">
+                        <div class="step-header">
+                            <div class="step-number">1</div>
+                            <div class="step-title tooltip">Código con Framework
+                                <span class="tooltip-text">Código escrito en frameworks modernos como React o TypeScript utiliza sintaxis avanzada que no es directamente compatible con todos los entornos.</span>
+                            </div>
+                        </div>
+                        <div class="step-description">Desarrollo en frameworks como React, Vue o TypeScript, utilizando características modernas (como JSX o tipado estático) que requieren procesamiento antes de ejecutarse.</div>
+                        <div class="code-header">⚛️ App.jsx (React)</div>
+                        <div class="code-block with-header syntax-highlight">
+import React from 'react';
+
+function App() {
+  const [mensaje, setMensaje] = React.useState('¡Hola desde React!');
+
+  return (
+    <div className="app">
+      <h1>{mensaje}</h1>
+      <button onClick={() => setMensaje('¡Cambiado!')}>
+        Cambiar
+      </button>
+    </div>
+  );
+}
+
+export default App;
+                        </div>
+                    </div>
+
+                    <div class="transition-arrow">
+                        <div class="arrow-line"></div>
+                        <div class="arrow-text">TRANSPILA →</div>
+                        <div class="arrow-line"></div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-header">
+                            <div class="step-number">2</div>
+                            <div class="step-title tooltip">Transpilación
+                                <span class="tooltip-text">Herramientas como Babel o Webpack convierten el código moderno (JSX, TypeScript) a JavaScript estándar compatible con navegadores.</span>
+                            </div>
+                        </div>
+                        <div class="step-description">Herramientas como Babel o Webpack transforman el código fuente (por ejemplo, JSX) a JavaScript estándar, optimizando y empaquetando los recursos para ejecución.</div>
+                        <div class="code-header">⚙️ Comando de build</div>
+                        <div class="code-block with-header">
+npm run build
+                        </div>
+                        <div class="transition-arrow">
+                            <div class="arrow-line"></div>
+                            <div class="arrow-text">GENERA →</div>
+                            <div class="arrow-line"></div>
+                        </div>
+                        <div class="code-header">📦 bundle.js (generado)</div>
+                        <div class="code-block with-header syntax-highlight">
+function App() {
+  var _React$useState = React.useState('¡Hola desde React!'),
+      mensaje = _React$useState[0],
+      setMensaje = _React$useState[1];
+
+  return React.createElement(
+    "div",
+    { className: "app" },
+    React.createElement("h1", null, mensaje),
+    React.createElement("button", {
+      onClick: function() {
+        return setMensaje('¡Cambiado!');
+      }
+    }, "Cambiar")
+  );
+}
+                        </div>
+                    </div>
+
+                    <div class="transition-arrow">
+                        <div class="arrow-line"></div>
+                        <div class="arrow-text">CARGA →</div>
+                        <div class="arrow-line"></div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-header">
+                            <div class="step-number">3</div>
+                            <div class="step-title tooltip">Ejecución Final
+                                <span class="tooltip-text">El código transpilado se ejecuta como JavaScript estándar en un navegador, combinando la flexibilidad de la interpretación con la preparación previa.</span>
+                            </div>
+                        </div>
+                        <div class="step-description">El código transpilado se carga en un navegador y se ejecuta como JavaScript estándar, aprovechando las optimizaciones realizadas durante la transpilación.</div>
+                        <div class="code-header">🌐 index.html (final)</div>
+                        <div class="code-block with-header syntax-highlight">
+<!DOCTYPE html>
+<html>
+ comisión <head>
+    <title>React App</title>
+</head>
+<body>
+    <div id="root"></div>
+    <script src="bundle.js"></script>
+</body>
+</html>
+                        </div>
+                        <div class="result-box">
+                            <div class="result-title">🎯 Resultado final:</div>
+                            Una aplicación React que funciona en cualquier navegador moderno, pero fue escrita con sintaxis JSX moderna y transpilada a JavaScript compatible.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="background: #2c3e50; color: white; padding: 25px; border-radius: 15px; text-align: center; margin-top: 30px;">
+            <h3>🎯 Comparación de Transformaciones</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 15px; text-align: left;">
+                <div>
+                    <strong>📦 Compiladas:</strong><br>
+                    Código Fuente → Código Máquina<br>
+                    <em>Una vez, ejecutable independiente</em>
+                </div>
+                <div>
+                    <strong>🔍 Interpretadas:</strong><br>
+                    Código Fuente → Ejecución Directa<br>
+                    <em>Cada vez, requiere intérprete</em>
+                </div>
+                <div>
+                    <strong>🔄 Transpiladas:</strong><br>
+                    Framework → JavaScript → Interpretación<br>
+                    <em>Híbrido: compila a código interpretado</em>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const sections = {
+            compiled: { steps: [], arrows: [], current: 0 },
+            interpreted: { steps: [], arrows: [], current: 0 },
+            transpiled: { steps: [], arrows: [], current: 0 }
+        };
+
+        function initializeSteps() {
+            Object.keys(sections).forEach(section => {
+                const steps = document.querySelectorAll(`.process-section.${section} .step-card`);
+                const arrows = document.querySelectorAll(`.process-section.${section} .transition-arrow`);
+                sections[section].steps = Array.from(steps);
+                sections[section].arrows = Array.from(arrows);
+                resetSteps(section);
+            });
+        }
+
+        function showNextStep(section) {
+            const sec = sections[section];
+            if (sec.current < sec.steps.length) {
+                sec.steps[sec.current].classList.add('visible');
+                if (sec.current < sec.arrows.length) {
+                    sec.arrows[sec.current].classList.add('visible');
+                }
+                sec.current++;
+            }
+        }
+
+        function resetSteps(section) {
+            const sec = sections[section];
+            sec.steps.forEach(step => step.classList.remove('visible'));
+            sec.arrows.forEach(arrow => arrow.classList.remove('visible'));
+            sec.current = 0;
+            setTimeout(() => showNextStep(section), 100); // Show first step
+        }
+
+        document.addEventListener('DOMContentLoaded', initializeSteps);
+    </script>
+</body>
+</html>

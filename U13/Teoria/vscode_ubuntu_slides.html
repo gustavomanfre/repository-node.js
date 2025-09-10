@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instalación VS Code en Ubuntu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            overflow: hidden;
+        }
+
+        .slideshow-container {
+            position: relative;
+            max-width: 100%;
+            margin: auto;
+            height: 100vh;
+        }
+
+        .slide {
+            display: none;
+            padding: 30px;
+            text-align: left;
+            height: 100vh;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            animation: fadeIn 0.5s ease-in-out;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 25px;
+            text-align: center;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        h2 {
+            font-size: 1.9em;
+            margin-bottom: 25px;
+            text-align: center;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            color: #34495e;
+            font-weight: 600;
+        }
+
+        h4 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #34495e;
+            font-weight: 600;
+        }
+
+        .step {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 15px 0;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .step-title {
+            font-size: 1.6em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .step-content {
+            font-size: 1em;
+            line-height: 1.6;
+            text-align: left;
+        }
+
+        .command-box {
+            background: #2c3e50;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #3498db;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .command {
+            color: #ecf0f1;
+            font-size: 1.1em;
+            margin: 5px 0;
+            font-weight: bold;
+        }
+
+        .explanation-box {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 18px;
+            margin: 15px 0;
+            border-left: 3px solid #3498db;
+        }
+
+        .part-explanation {
+            background: #ffffff;
+            border-radius: 6px;
+            padding: 18px;
+            margin: 15px 0;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .part {
+            display: inline-block;
+            margin: 3px;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+        }
+
+        .part.sudo { 
+            background: #e74c3c; 
+            color: #fff;
+        }
+        .part.command { 
+            background: #3498db; 
+            color: #fff;
+        }
+        .part.flag { 
+            background: #f39c12; 
+            color: #fff;
+        }
+        .part.file { 
+            background: #9b59b6; 
+            color: #fff;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .control-btn {
+            background: #34495e;
+            border: none;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: #2c3e50;
+            transform: translateY(-2px);
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #34495e;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+        }
+
+        .website-info {
+            background: #f8f9fa;
+            padding: 18px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border: 1px solid #e0e0e0;
+        }
+
+        .highlight {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        ul {
+            text-align: left;
+            font-size: 1em;
+            line-height: 1.6;
+            margin-left: 20px;
+        }
+
+        li {
+            margin: 8px 0;
+            list-style: disc;
+        }
+
+        .instruction {
+            font-size: 1.1em;
+            background: #ecf0f1;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 12px 0;
+            border-left: 4px solid #3498db;
+        }
+
+        p {
+            margin-bottom: 12px;
+            line-height: 1.6;
+            text-align: justify;
+        }
+
+        .detailed-explanation {
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .code-inline {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #2c3e50;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="slideshow-container">
+        <div class="slide-counter">
+            <span id="currentSlide">1</span> / <span id="totalSlides">4</span>
+        </div>
+
+        <!-- DIAPOSITIVA 1: Descarga -->
+        <div class="slide active">
+            <h2>📥 Descarga el paquete .deb</h2>
+            <div class="step">
+                <div class="step-content">
+                    <div class="instruction">
+                        <strong>🌐 Ve a:</strong> <span class="highlight">code.visualstudio.com</span>
+                    </div>
+                    
+                    <div class="instruction">
+                        <strong>🖱️ Haz clic en:</strong> <span class="highlight">"Download for Linux (.deb)"</span>
+                    </div>
+
+                    <div class="website-info">
+                        <h4>💡 ¿Por qué desde el sitio oficial?</h4>
+                        <ul>
+                            <li><strong>Seguridad garantizada:</strong> El software proviene directamente de Microsoft, eliminando riesgos de malware o modificaciones no autorizadas</li>
+                            <li><strong>Última versión estable:</strong> Siempre obtienes la versión más reciente con las últimas características y correcciones de seguridad</li>
+                            <li><strong>Compatibilidad optimizada:</strong> El paquete está específicamente compilado y optimizado para sistemas basados en Debian/Ubuntu</li>
+                            <li><strong>Soporte oficial:</strong> Acceso a documentación oficial y soporte técnico de Microsoft</li>
+                        </ul>
+                    </div>
+
+                    <div class="detailed-explanation">
+                        <h4>🔍 ¿Qué es un archivo .deb?</h4>
+                        <p>Un archivo <span class="code-inline">.deb</span> es un formato de paquete de software utilizado por sistemas basados en Debian (como Ubuntu). Contiene todos los archivos necesarios para instalar una aplicación, incluyendo los ejecutables, archivos de configuración, documentación y metadatos sobre dependencias.</p>
+                        
+                        <p>Este formato facilita la instalación y desinstalación de software, ya que el sistema de gestión de paquetes puede rastrear qué archivos pertenecen a qué programa y manejar las dependencias automáticamente.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIAPOSITIVA 2: Instalar - Abrir terminal -->
+        <div class="slide">
+            <h2>💻 Instala el paquete: Abre la terminal</h2>
+            <div class="step">
+                <div class="step-content">
+                    <div class="instruction">
+                        <strong>📂 Navega al directorio de descarga:</strong>
+                    </div>
+                    
+                    <div class="command-box">
+                        <div class="command">cd Descargas</div>
+                    </div>
+
+                    <div class="instruction">
+                        <strong>⚡ Ejecuta el comando de instalación:</strong>
+                    </div>
+
+                    <div class="command-box">
+                        <div class="command">sudo dpkg -i code_*.deb</div>
+                    </div>
+
+                    <div class="website-info">
+                        <h4>🔑 Métodos para abrir la terminal:</h4>
+                        <ul>
+                            <li><strong>Atajo de teclado:</strong> Presiona <span class="code-inline">Ctrl + Alt + T</span> simultáneamente</li>
+                            <li><strong>Menú de aplicaciones:</strong> Busca "Terminal" o "Consola" en el menú de aplicaciones</li>
+                            <li><strong>Clic derecho:</strong> En el escritorio, clic derecho → "Abrir terminal aquí"</li>
+                            <li><strong>Buscador:</strong> Presiona la tecla Super (Windows) y escribe "terminal"</li>
+                        </ul>
+                    </div>
+
+                    <div class="detailed-explanation">
+                        <h4>📁 ¿Por qué navegar a Descargas?</h4>
+                        <p>Por defecto, los navegadores web descargan archivos en la carpeta "Descargas" del usuario. El comando <span class="code-inline">cd Descargas</span> cambia el directorio de trabajo actual a esta ubicación, facilitando la ejecución de comandos sobre el archivo descargado sin necesidad de escribir la ruta completa.</p>
+                        
+                        <p>Si descargaste el archivo en otra ubicación, deberás navegar a esa carpeta específica o proporcionar la ruta completa al archivo en el comando de instalación.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIAPOSITIVA 3: Explicación comando dpkg -->
+        <div class="slide">
+            <h2>🔍 Explicación detallada del comando</h2>
+            <div class="step">
+                <div class="command-box">
+                    <div class="command">sudo dpkg -i code_*.deb</div>
+                </div>
+                
+                <div class="step-content">
+                    <div class="part-explanation">
+                        <h4><span class="part sudo">sudo</span></h4>
+                        <p><strong>Significado:</strong> "Substitute User Do" o "Super User Do" - Ejecutar comandos como otro usuario, típicamente como administrador (root).</p>
+                        
+                        <p><strong>¿Por qué es necesario?:</strong> La instalación de software requiere permisos de administrador para modificar directorios del sistema como <span class="code-inline">/usr/bin/</span>, <span class="code-inline">/opt/</span>, <span class="code-inline">/usr/share/</span> y otros directorios protegidos donde se instalan las aplicaciones.</p>
+                        
+                        <p><strong>Proceso de autenticación:</strong> Al usar sudo, el sistema te pedirá tu contraseña de usuario para verificar que tienes permisos de administrador. Esta contraseña se cachea por un período corto (generalmente 15 minutos) para evitar reingresarla constantemente.</p>
+                        
+                        <p><strong>Seguridad:</strong> sudo proporciona un registro de auditoría de todos los comandos ejecutados con privilegios elevados, mejorando la seguridad y trazabilidad del sistema.</p>
+                    </div>
+
+                    <div class="part-explanation">
+                        <h4><span class="part command">dpkg</span></h4>
+                        <p><strong>Significado:</strong> "Debian Package Manager" - Es el gestor de paquetes de bajo nivel utilizado por sistemas basados en Debian, incluyendo Ubuntu.</p>
+                        
+                        <p><strong>Función principal:</strong> dpkg se encarga de la instalación, desinstalación, configuración y consulta de paquetes .deb directamente. Opera a nivel de sistema de archivos, extrayendo archivos del paquete y colocándolos en las ubicaciones correctas del sistema.</p>
+                        
+                        <p><strong>Diferencia con apt:</strong> Mientras que apt es un gestor de alto nivel que puede descargar paquetes de repositorios online y resolver dependencias automáticamente, dpkg trabaja únicamente con archivos .deb locales y no maneja dependencias de forma automática.</p>
+                        
+                        <p><strong>Base de datos de paquetes:</strong> dpkg mantiene una base de datos detallada de todos los paquetes instalados en <span class="code-inline">/var/lib/dpkg/status</span>, incluyendo información sobre archivos instalados, versiones, dependencias y estado de configuración.</p>
+                        
+                        <p><strong>Ventajas:</strong> Instalación rápida y directa, control granular sobre el proceso de instalación, útil para paquetes obtenidos fuera de los repositorios oficiales.</p>
+                    </div>
+
+                    <div class="part-explanation">
+                        <h4><span class="part flag">-i</span></h4>
+                        <p><strong>Significado:</strong> Flag o bandera de "install" (instalar). Es un parámetro que le dice a dpkg qué operación debe realizar.</p>
+                        
+                        <p><strong>Función específica:</strong> Instruye a dpkg para extraer e instalar el paquete especificado, incluyendo la ejecución de scripts de pre y post instalación contenidos en el paquete.</p>
+                        
+                        <p><strong>Proceso de instalación:</strong> Con este flag, dpkg extraerá los archivos del .deb, los colocará en sus ubicaciones correspondientes, actualizará la base de datos de paquetes y ejecutará cualquier script de configuración necesario.</p>
+                        
+                        <p><strong>Otras opciones comunes:</strong> <span class="code-inline">-r</span> (remove/remover), <span class="code-inline">-l</span> (list/listar), <span class="code-inline">-s</span> (status/estado), <span class="code-inline">-L</span> (listfiles/listar archivos).</p>
+                    </div>
+
+                    <div class="part-explanation">
+                        <h4><span class="part file">code_*.deb</span></h4>
+                        <p><strong>Patrón de búsqueda:</strong> El asterisco (*) es un comodín (wildcard) que representa cualquier secuencia de caracteres. Este patrón busca cualquier archivo que comience con "code_" y termine con ".deb".</p>
+                        
+                        <p><strong>Ventaja del comodín:</strong> Evita tener que escribir el nombre completo del archivo, que generalmente incluye números de versión y arquitectura complejos como "code_1.102.2-1753187809_amd64.deb".</p>
+                        
+                        <p><strong>Funcionamiento:</strong> El shell (bash) expande automáticamente este patrón antes de ejecutar el comando, reemplazándolo con el nombre real del archivo que coincida con el patrón.</p>
+                        
+                        <p><strong>Precaución:</strong> Si hay múltiples archivos que coinciden con el patrón, el comando puede fallar o comportarse de manera inesperada. Es recomendable asegurarse de que solo existe un archivo que coincida con el patrón en el directorio actual.</p>
+                        
+                        <p><strong>Alternativa:</strong> También puedes especificar el nombre completo del archivo si prefieres mayor precisión: <span class="code-inline">sudo dpkg -i code_1.102.2-1753187809_amd64.deb</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIAPOSITIVA 4: Comando apt-get install -f -->
+        <div class="slide">
+            <h2>🔧 Resolución de dependencias</h2>
+            <div class="step">
+                <div class="command-box">
+                    <div class="command">sudo apt-get install -f</div>
+                    <div style="color: #95a5a6; font-size: 0.9em; margin-top: 8px;"># Para resolver dependencias si es necesario</div>
+                </div>
+                
+                <div class="step-content">
+                    <div class="part-explanation">
+                        <h4><span class="part sudo">sudo</span></h4>
+                        <p><strong>Mismo uso que antes:</strong> Permisos de administrador requeridos para instalar software adicional en el sistema.</p>
+                        <p><strong>Necesario porque:</strong> La instalación de dependencias implica modificar directorios del sistema y la base de datos de paquetes, operaciones que requieren privilegios elevados.</p>
+                    </div>
+
+                    <div class="part-explanation">
+                        <h4><span class="part command">apt-get</span></h4>
+                        <p><strong>Significado:</strong> "Advanced Package Tool" - Gestor de paquetes de alto nivel que forma parte del conjunto de herramientas APT de Debian/Ubuntu.</p>
+                        
+                        <p><strong>Diferencias clave con dpkg:</strong> apt-get puede descargar paquetes de repositorios remotos, resolver dependencias automáticamente, y manejar actualizaciones del sistema de manera inteligente.</p>
+                        
+                        <p><strong>Acceso a repositorios:</strong> Conecta con servidores de paquetes online (como archive.ubuntu.com) para descargar software y sus dependencias, algo que dpkg no puede hacer.</p>
+                        
+                        <p><strong>Resolución inteligente:</strong> Calcula automáticamente qué paquetes adicionales son necesarios y en qué orden deben instalarse para satisfacer todas las dependencias.</p>
+                    </div>
+
+                    <div class="part-explanation">
+                        <h4><span class="part flag">install -f</span></h4>
+                        <p><strong>install:</strong> Comando principal de apt-get para instalar paquetes desde repositorios.</p>
+                        
+                        <p><strong>-f (fix-broken):</strong> Flag específico que significa "fix-broken dependencies" - arreglar dependencias rotas o faltantes.</p>
+                        
+                        <p><strong>Funcionamiento:</strong> Cuando se usa sin especificar paquetes, apt-get examina el sistema en busca de paquetes con dependencias no satisfechas e intenta resolverlas automáticamente.</p>
+                        
+                        <p><strong>Proceso automático:</strong> Busca en los repositorios configurados, descarga las librerías o programas necesarios, y los instala en el orden correcto para satisfacer todas las dependencias.</p>
+                    </div>
+
+                    <div class="explanation-box">
+                        <h4>🎯 ¿Cuándo usar este comando?</h4>
+                        <p><strong>Solo ejecutar si el primer comando falla</strong> con mensajes de error como:</p>
+                        <ul>
+                            <li><span class="code-inline">"dependency problems prevent configuration of code"</span></li>
+                            <li><span class="code-inline">"code depends on libnss3 (>= 2:3.26), but it is not installed"</span></li>
+                            <li><span class="code-inline">"trying to overwrite file, which is also in package..."</span></li>
+                        </ul>
+                        
+                        <p><strong>¿Qué son las dependencias?</strong> Son librerías, componentes del sistema o otros programas que Visual Studio Code necesita para funcionar correctamente. Ejemplos comunes incluyen librerías gráficas, componentes de seguridad, y herramientas del sistema.</p>
+                        
+                        <p><strong>Proceso automático:</strong> Este comando descarga e instala automáticamente todas las dependencias faltantes desde los repositorios oficiales de Ubuntu, sin necesidad de intervención manual.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="control-btn" onclick="changeSlide(-1)">⬅ Anterior</button>
+        <button class="control-btn" onclick="changeSlide(1)">Siguiente ➡</button>
+    </div>
+
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            document.getElementById('currentSlide').textContent = index + 1;
+        }
+
+        function changeSlide(direction) {
+            currentSlideIndex += direction;
+            
+            if (currentSlideIndex >= totalSlides) {
+                currentSlideIndex = 0;
+            } else if (currentSlideIndex < 0) {
+                currentSlideIndex = totalSlides - 1;
+            }
+            
+            showSlide(currentSlideIndex);
+        }
+
+        // Navegación con teclado
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight' || event.key === ' ') {
+                changeSlide(1);
+            } else if (event.key === 'ArrowLeft') {
+                changeSlide(-1);
+            }
+        });
+
+        // Inicializar
+        showSlide(0);
+    </script>
+</body>
+</html>

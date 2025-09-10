@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Área de trabajo en VS Code</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            overflow: hidden;
+        }
+
+        .slideshow-container {
+            position: relative;
+            max-width: 100%;
+            margin: auto;
+            height: 100vh;
+        }
+
+        .slide {
+            display: none;
+            padding: 30px;
+            text-align: left;
+            height: 100vh;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            animation: fadeIn 0.5s ease-in-out;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 25px;
+            text-align: center;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        h2 {
+            font-size: 1.9em;
+            margin-bottom: 25px;
+            text-align: center;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            color: #34495e;
+            font-weight: 600;
+        }
+
+        h4 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #34495e;
+            font-weight: 600;
+        }
+
+        .step {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 15px 0;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .step-title {
+            font-size: 1.6em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .step-content {
+            font-size: 1em;
+            line-height: 1.6;
+            text-align: left;
+        }
+
+        .command-box {
+            background: #2c3e50;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #3498db;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .command {
+            color: #ecf0f1;
+            font-size: 1.1em;
+            margin: 5px 0;
+            font-weight: bold;
+        }
+
+        .explanation-box {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 18px;
+            margin: 15px 0;
+            border-left: 3px solid #3498db;
+        }
+
+        .menu-option {
+            background: #ffffff;
+            border-radius: 6px;
+            padding: 18px;
+            margin: 15px 0;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .folder-structure {
+            background: #2c3e50;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            color: #ecf0f1;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .folder-line {
+            margin: 3px 0;
+            font-size: 0.95em;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .control-btn {
+            background: #34495e;
+            border: none;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: #2c3e50;
+            transform: translateY(-2px);
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #34495e;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+        }
+
+        .website-info {
+            background: #f8f9fa;
+            padding: 18px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border: 1px solid #e0e0e0;
+        }
+
+        .highlight {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        ul {
+            text-align: left;
+            font-size: 1em;
+            line-height: 1.6;
+            margin-left: 20px;
+        }
+
+        li {
+            margin: 8px 0;
+            list-style: disc;
+        }
+
+        .instruction {
+            font-size: 1.1em;
+            background: #ecf0f1;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 12px 0;
+            border-left: 4px solid #3498db;
+        }
+
+        p {
+            margin-bottom: 12px;
+            line-height: 1.6;
+            text-align: justify;
+        }
+
+        .detailed-explanation {
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .code-inline {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #2c3e50;
+            font-size: 0.9em;
+        }
+
+        .shortcut {
+            background: #34495e;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            margin: 0 2px;
+        }
+
+        .menu-path {
+            background: #e8f4fd;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            border-left: 3px solid #3498db;
+            margin: 10px 0;
+        }
+
+        .tip-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #f39c12;
+        }
+    </style>
+</head>
+<body>
+    <div class="slideshow-container">
+        <div class="slide-counter">
+            <span id="currentSlide">1</span> / <span id="totalSlides">5</span>
+        </div>
+
+        <!-- DIAPOSITIVA 1: Abrir Visual Studio Code -->
+        <div class="slide active">
+            <h2>🚀 Abrir Visual Studio Code</h2>
+            <div class="step">
+                <div class="step-content">
+                    <div class="instruction">
+                        <strong>💻 Métodos para abrir VS Code:</strong>
+                    </div>
+
+                    <div class="menu-option">
+                        <h4>1. Desde el menú de aplicaciones</h4>
+                        <p>Busca "Visual Studio Code" en el menú de aplicaciones de Ubuntu y haz clic en el icono.</p>
+                    </div>
+
+                    <div class="menu-option">
+                        <h4>2. Desde la terminal</h4>
+                        <div class="command-box">
+                            <div class="command">code</div>
+                        </div>
+                        <p>Este comando abre VS Code en el directorio actual.</p>
+                    </div>
+
+                    <div class="menu-option">
+                        <h4>3. Atajo de teclado (si está configurado)</h4>
+                        <p>Puedes configurar un atajo personalizado en la configuración del sistema.</p>
+                    </div>
+
+                    <div class="detailed-explanation">
+                        <h4>🎯 ¿Qué verás al abrir VS Code por primera vez?</h4>
+                        <ul>
+                            <li><strong>Pantalla de bienvenida:</strong> Con opciones para abrir archivos, carpetas o clonar repositorios</li>
+                            <li><strong>Explorador vacío:</strong> Panel lateral izquierdo sin archivos</li>
+                            <li><strong>Editor principal:</strong> Área central donde editarás tu código</li>
+                            <li><strong>Terminal integrado:</strong> Panel inferior que puedes activar</li>
+                            <li><strong>Barra de actividades:</strong> Panel izquierdo con iconos para explorador, búsqueda, control de versiones, etc.</li>
+                        </ul>
+                    </div>
+
+                    <div class="tip-box">
+                        <h4>💡 Consejo:</h4>
+                        <p>La primera vez que abras VS Code, es recomendable explorar la pantalla de bienvenida que contiene tutoriales y configuraciones útiles para comenzar.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIAPOSITIVA 2: Abrir/Crear área de trabajo -->
+        <div class="slide">
+            <h2>📁 Crear y abrir área de trabajo</h2>
+            <div class="step">
+                <div class="step-content">
+                    <div class="instruction">
+                        <strong>🗂️ ¿Qué es un área de trabajo?</strong>
+                    </div>
+
+                    <div class="detailed-explanation">
+                        <p>Un <strong>área de trabajo (workspace)</strong> en VS Code es un conjunto de carpetas y archivos que forman un proyecto. Permite a VS Code entender la estructura de tu proyecto y aplicar configuraciones específicas.</p>
+                        
+                        <h4>Ventajas de usar áreas de trabajo:</h4>
+                        <ul>
+                            <li><strong>Configuración específica:</strong> Ajustes que solo se aplican a ese proyecto</li>
+                            <li><strong>Extensiones recomendadas:</strong> VS Code puede sugerir extensiones útiles para tu tipo de proyecto</li>
+                            <li><strong>Depuración configurada:</strong> Configuraciones de debugging específicas</li>
+                            <li><strong>Tareas automatizadas:</strong> Scripts y comandos personalizados</li>
+                            <li><strong>Integración con Git:</strong> Control de versiones integrado</li>
+                        </ul>
+                    </div>
+
+                    <div class="instruction">
+                        <strong>🎯 Método 1: Crear carpeta desde VS Code</strong>
+                    </div>
+
+                    <div class="menu-path">
+                        Archivo → Abrir carpeta... → "Crear nueva carpeta"
+                    </div>
+
+                    <div class="instruction">
+                        <strong>🎯 Método 2: Crear carpeta desde terminal</strong>
+                    </div>
+
+                    <div class="command-box">
+                        <div class="command">mkdir mi-proyecto</div>
+                        <div class="command">cd mi-proyecto</div>
+                        <div class="command">code .</div>
+                    </div>
+
+                    <div class="explanation-box">
+                        <p><span class="code-inline">mkdir</span> crea la carpeta, <span class="code-inline">cd</span> entra en ella, y <span class="code-inline">code .</span> abre VS Code en esa ubicación.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIAPOSITIVA 3: Menú Archivo - Abrir carpeta -->
+        <div class="slide">
+            <h2>📂 Menú Archivo - Abrir carpeta</h2>
+            <div class="step">
+                <div class="step-content">
+                    <div class="instruction">
+                        <strong>🖱️ Navegación por menús:</strong>
+                    </div>
+
+                    <div class="menu-option">
+                        <h4>Paso 1: Acceder al menú Archivo</h4>
+                        <div class="menu-path">
+                            Clic en "Archivo" (esquina superior izquierda)
+                        </div>
+                        <p><strong>Atajo:</strong> <span class="shortcut">Alt + F</span></p>
+                    </div>
+
+                    <div class="menu-option">
+                        <h4>Paso 2: Seleccionar "Abrir carpeta..."</h4>
+                        <div class="menu-path">
+                            Archivo → Abrir carpeta...
+                        </div>
+                        <p><strong>Atajo:</strong> <span class="shortcut">Ctrl + K, Ctrl + O</span></p>
+                    </div>
+
+                    <div class="detailed-explanation">
+                        <h4>🔍 Otras opciones útiles en el menú Archivo:</h4>
+                        <ul>
+                            <li><strong>Nuevo archivo:</strong> <span class="shortcut">Ctrl + N</span> - Crea un archivo nuevo sin guardar</li>
+                            <li><strong>Abrir archivo:</strong> <span class="shortcut">Ctrl + O</span> - Abre un archivo específico</li>
+                            <li><strong>Abrir workspace:</strong> Abre un archivo de configuración de workspace (.code-workspace)</li>
+                            <li><strong>Agregar carpeta al workspace:</strong> Añade una carpeta adicional al proyecto actual</li>
+                            <li><strong>Guardar workspace como:</strong> Guarda la configuración actual como un archivo .code-workspace</li>
+                            <li><strong>Recientes:</strong> Lista de archivos y carpetas abiertos recientemente</li>
+                        </ul>
+                    </div>
+
+                    <div class="tip-box">
+                        <h4>⚡ Atajos útiles para navegación:</h4>
+                        <ul>
+                            <li><span class="shortcut">Ctrl + Shift + P</span> - Paleta de comandos (buscar cualquier comando)</li>
+                            <li><span class="shortcut">Ctrl + Shift + E</span> - Enfocar explorador de archivos</li>
+                            <li><span class="shortcut">Ctrl + `</span> - Abrir/cerrar terminal integrado</li>
+                        </ul>
+                    </div>
+
+                    <div class="explanation-box">
+                        <h4>🎯 ¿Qué sucede al abrir una carpeta?</h4>
+                        <p>VS Code carga toda la estructura de archivos en el explorador lateral, analiza el contenido para detectar el tipo de proyecto, y habilita funcionalidades específicas como autocompletado, syntax highlighting, y debugging según los archivos encontrados.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIAPOSITIVA 4: Crear estructura básica de proyecto -->
+        <div class="slide">
+            <h2>🏗️ Crear estructura básica de proyecto</h2>
+            <div class="step">
+                <div class="step-content">
+                    <div class="instruction">
+                        <strong>📋 Estructura típica de un proyecto web:</strong>
+                    </div>
+
+                    <div class="folder-structure">
+                        <div class="folder-line">mi-proyecto/</div>
+                        <div class="folder-line">├── index.html</div>
+                        <div class="folder-line">├── css/</div>
+                        <div class="folder-line">│   └── styles.css</div>
+                        <div class="folder-line">├── js/</div>
+                        <div class="folder-line">│   └── script.js</div>
+                        <div class="folder-line">├── img/</div>
+                        <div class="folder-line">├── README.md</div>
+                        <div class="folder-line">└── .gitignore</div>
+                    </div>
+
+                    <div class="instruction">
+                        <strong>🔨 Crear archivos y carpetas en VS Code:</strong>
+                    </div>
+
+                    <div class="menu-option">
+                        <h4>Método 1: Clic derecho en explorador</h4>
+                        <ul>
+                            <li>Clic derecho en el explorador → "Nueva carpeta" o "Nuevo archivo"</li>
+                            <li>Escribir el nombre y presionar Enter</li>
+                        </ul>
+                    </div>
+
+                    <div class="menu-option">
+                        <h4>Método 2: Atajos de teclado</h4>
+                        <ul>
+                            <li><span class="shortcut">Ctrl + N</span> - Nuevo archivo</li>
+                            <li><span class="shortcut">Ctrl + Shift + N</span> - Nueva ventana</li>
+                            <li>En explorador: presionar teclas para crear carpeta/archivo</li>
+                        </ul>
+                    </div>
+
+                    <div class="menu-option">
+                        <h4>Método 3: Terminal integrado</h4>
+                        <div class="command-box">
+                            <div class="command">mkdir css js img</div>
+                            <div class="command">touch index.html README.md .gitignore</div>
+                            <div class="command">touch css/styles.css js/script.js</div>
+                        </div>
+                    </div>
+
+                    <div class="detailed-explanation">
+                        <h4>📝 Explicación de archivos comunes:</h4>
+                        <ul>
+                            <li><strong>index.html:</strong> Página principal del sitio web</li>
+                            <li><strong>styles.css:</strong> Hoja de estilos para el diseño</li>
+                            <li><strong>script.js:</strong> Código JavaScript para interactividad</li>
+                            <li><strong>README.md:</strong> Documentación del proyecto</li>
+                            <li><strong>.gitignore:</strong> Archivos a ignorar en control de versiones</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIAPOSITIVA 5: Configurar y personalizar workspace -->
+        <div class="slide">
+            <h2>⚙️ Configurar y personalizar workspace</h2>
+            <div class="step">
+                <div class="step-content">
+                    <div class="instruction">
+                        <strong>🎛️ Configuraciones del workspace:</strong>
+                    </div>
+
+                    <div class="menu-option">
+                        <h4>1. Configuraciones específicas del proyecto</h4>
+                        <div class="menu-path">
+                            Archivo → Preferencias → Configuración → Pestaña "Workspace"
+                        </div>
+                        <p>Estas configuraciones solo se aplican al proyecto actual y se guardan en <span class="code-inline">.vscode/settings.json</span></p>
+                    </div>
+
+                    <div class="menu-option">
+                        <h4>2. Extensiones recomendadas</h4>
+                        <p>Crear archivo <span class="code-inline">.vscode/extensions.json</span> con extensiones sugeridas:</p>
+                        <div class="command-box">
+                            <div class="command">{</div>
+                            <div class="command">  "recommendations": [</div>
+                            <div class="command">    "ms-python.python",</div>
+                            <div class="command">    "esbenp.prettier-vscode"</div>
+                            <div class="command">  ]</div>
+                            <div class="command">}</div>
+                        </div>
+                    </div>
+
+                    <div class="menu-option">
+                        <h4>3. Tareas automatizadas</h4>
+                        <p>Crear archivo <span class="code-inline">.vscode/tasks.json</span> para comandos personalizados:</p>
+                        <div class="command-box">
+                            <div class="command">{</div>
+                            <div class="command">  "version": "2.0.0",</div>
+                            <div class="command">  "tasks": [</div>
+                            <div class="command">    {</div>
+                            <div class="command">      "label": "Ejecutar servidor local",</div>
+                            <div class="command">      "type": "shell",</div>
+                            <div class="command">      "command": "python -m http.server 8000"</div>
+                            <div class="command">    }</div>
+                            <div class="command">  ]</div>
+                            <div class="command">}</div>
+                        </div>
+                    </div>
+
+                    <div class="detailed-explanation">
+                        <h4>🔧 Configuraciones útiles para diferentes tipos de proyecto:</h4>
+                        <ul>
+                            <li><strong>Proyectos web:</strong> Live Server, Prettier, HTML/CSS/JS snippets</li>
+                            <li><strong>Python:</strong> Python extension, pylint, autopep8</li>
+                            <li><strong>Node.js:</strong> npm scripts, ESLint, Node.js modules intellisense</li>
+                            <li><strong>Git:</strong> GitLens, Git Graph para mejor visualización</li>
+                        </ul>
+                    </div>
+
+                    <div class="tip-box">
+                        <h4>💡 Consejos finales:</h4>
+                        <ul>
+                            <li>Guarda el workspace como archivo .code-workspace para reutilizar configuraciones</li>
+                            <li>Usa la paleta de comandos (<span class="shortcut">Ctrl + Shift + P</span>) para acceder rápidamente a cualquier función</li>
+                            <li>Explora el marketplace de extensiones para herramientas específicas de tu proyecto</li>
+                            <li>Configura snippets personalizados para código que uses frecuentemente</li>
+                        </ul>
+                    </div>
+
+                    <div class="explanation-box">
+                        <h4>🎯 Resultado final:</h4>
+                        <p>Tendrás un workspace completamente configurado y organizado, listo para desarrollo eficiente con todas las herramientas y configuraciones específicas para tu tipo de proyecto.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="control-btn" onclick="changeSlide(-1)">⬅ Anterior</button>
+        <button class="control-btn" onclick="changeSlide(1)">Siguiente ➡</button>
+    </div>
+
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            document.getElementById('currentSlide').textContent = index + 1;
+        }
+
+        function changeSlide(direction) {
+            currentSlideIndex += direction;
+            
+            if (currentSlideIndex >= totalSlides) {
+                currentSlideIndex = 0;
+            } else if (currentSlideIndex < 0) {
+                currentSlideIndex = totalSlides - 1;
+            }
+            
+            showSlide(currentSlideIndex);
+        }
+
+        // Navegación con teclado
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight' || event.key === ' ') {
+                changeSlide(1);
+            } else if (event.key === 'ArrowLeft') {
+                changeSlide(-1);
+            }
+        });
+
+        // Inicializar
+        showSlide(0);
+    </script>
+</body>
+</html>

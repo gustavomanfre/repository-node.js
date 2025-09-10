@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualización en Tiempo Real - VS Code</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #2c3e50;
+            padding: 40px;
+            min-height: 100vh;
+        }
+
+        .slide-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            border: 1px solid #e0e6ed;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 2em;
+            margin: 30px 0 20px 0;
+            color: #34495e;
+            font-weight: 600;
+            border-left: 4px solid #3498db;
+            padding-left: 20px;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            margin: 20px 0 15px 0;
+            color: #2980b9;
+            font-weight: 600;
+        }
+
+        .extension-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            border-left: 5px solid #3498db;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+
+        .extension-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .recommended {
+            border-left-color: #27ae60;
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+        }
+
+        .extension-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .extension-name {
+            font-size: 1.6em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .recommended-badge {
+            background: #27ae60;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-left: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .author {
+            color: #7f8c8d;
+            font-size: 1em;
+            margin-top: 5px;
+        }
+
+        .installation-steps {
+            background: #ecf0f1;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .installation-steps h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .step-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .step-list li {
+            padding: 8px 0;
+            position: relative;
+            padding-left: 30px;
+            line-height: 1.5;
+        }
+
+        .step-list li::before {
+            content: counter(step-counter);
+            counter-increment: step-counter;
+            position: absolute;
+            left: 0;
+            top: 8px;
+            background: #3498db;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .step-list {
+            counter-reset: step-counter;
+        }
+
+        .usage-section {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .usage-section h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .benefits {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .benefit-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #27ae60;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .benefit-item::before {
+            content: "✅";
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .keyboard-shortcut {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .final-tip {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .final-tip h3 {
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .final-tip p {
+            font-size: 1.2em;
+            line-height: 1.6;
+        }
+
+        .code-example {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h1>Visualización en Tiempo Real en VS Code</h1>
+        <p style="text-align: center; font-size: 1.3em; color: #7f8c8d; margin-bottom: 40px;">
+            Cómo dividir la pantalla para ver tu código HTML/CSS mientras programas
+        </p>
+
+        <!-- Live Server -->
+        <div class="extension-card recommended">
+            <div class="extension-header">
+                <div>
+                    <h3 class="extension-name">Live Server</h3>
+                    <div class="author">por Ritwick Dey</div>
+                </div>
+                <span class="recommended-badge">Recomendada</span>
+            </div>
+            
+            <div class="installation-steps">
+                <h4>📥 Instalación:</h4>
+                <ol class="step-list">
+                    <li>Ve a Extensions (<span class="keyboard-shortcut">Ctrl+Shift+X</span>)</li>
+                    <li>Busca "Live Server"</li>
+                    <li>Instala la extensión de <strong>Ritwick Dey</strong></li>
+                </ol>
+            </div>
+
+            <div class="usage-section">
+                <h4>🚀 Uso:</h4>
+                <ul style="margin-left: 20px; line-height: 1.8;">
+                    <li>Haz clic derecho en tu archivo HTML → "Open with Live Server"</li>
+                    <li>O usa el atajo: <span class="keyboard-shortcut">Alt+L Alt+O</span></li>
+                    <li>Se abrirá automáticamente en tu navegador con recarga automática</li>
+                </ul>
+            </div>
+
+            <div class="benefits">
+                <div class="benefit-item">Recarga automática cuando guardas cambios</div>
+                <div class="benefit-item">Funciona con CSS, JS y HTML</div>
+                <div class="benefit-item">Servidor local real</div>
+                <div class="benefit-item">Compatible con cualquier navegador</div>
+                <div class="benefit-item">Soporte para dispositivos móviles</div>
+            </div>
+        </div>
+
+        <!-- Live Preview -->
+        <div class="extension-card">
+            <div class="extension-header">
+                <div>
+                    <h3 class="extension-name">Live Preview</h3>
+                    <div class="author">por Microsoft (Oficial)</div>
+                </div>
+            </div>
+            
+            <div class="installation-steps">
+                <h4>📥 Instalación:</h4>
+                <ol class="step-list">
+                    <li>Busca "Live Preview" en Extensions</li>
+                    <li>Instala la de <strong>Microsoft</strong></li>
+                </ol>
+            </div>
+
+            <div class="usage-section">
+                <h4>🚀 Uso:</h4>
+                <ul style="margin-left: 20px; line-height: 1.8;">
+                    <li>Haz clic derecho en tu HTML → "Show Preview"</li>
+                    <li>O usa: <span class="keyboard-shortcut">Ctrl+Shift+V</span></li>
+                    <li>Aparece una pestaña de vista previa <strong>dentro de VS Code</strong></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Preview on Web Server -->
+        <div class="extension-card">
+            <div class="extension-header">
+                <div>
+                    <h3 class="extension-name">Preview on Web Server</h3>
+                    <div class="author">Alternativa con diferentes opciones</div>
+                </div>
+            </div>
+            <p style="margin-top: 15px; color: #7f8c8d;">
+                Similar a Live Server pero con diferentes opciones de configuración y personalización.
+            </p>
+        </div>
+
+        <h2>🖥️ Cómo Dividir la Pantalla</h2>
+        <div class="installation-steps">
+            <h4>Método recomendado con Live Server:</h4>
+            <ol class="step-list">
+                <li>Instala y activa <strong>Live Server</strong></li>
+                <li>Abre tu archivo HTML con Live Server</li>
+                <li>Usa <span class="keyboard-shortcut">Windows + ←/→</span> para dividir VS Code y navegador</li>
+                <li>O arrastra la ventana del navegador a un lado de la pantalla</li>
+            </ol>
+        </div>
+
+        <div class="final-tip">
+            <h3>💡 Tip Final</h3>
+            <p>
+                <strong>Live Server</strong> es la opción más popular y confiable. Una vez instalada, 
+                cada cambio que hagas en tu código se reflejará automáticamente en el navegador, 
+                ¡sin necesidad de recargar manualmente la página!
+            </p>
+            <p style="margin-top: 15px; font-size: 1.1em;">
+                ¿Necesitas ayuda con la configuración? ¡Solo pregunta! 😊
+            </p>
+        </div>
+    </div>
+</body>
+</html>

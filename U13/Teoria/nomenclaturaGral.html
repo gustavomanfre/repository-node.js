@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reglas de Nomenclatura</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background-color: #f4f4f9;
+        }
+        h1 {
+            color: #1a73e8;
+            text-align: center;
+        }
+        .slide {
+            background-color: white;
+            border: 2px solid #1a73e8;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px auto;
+            width: 80%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        .slide ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .slide p {
+            margin: 10px 0;
+        }
+        .avatar {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 50px;
+            height: 50px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Reglas de nomenclatura</h1>
+
+    <div class="slide">
+        <h3>Nombre de variables</h3>
+        <p><strong>Reglas para nombrar una variable en JavaScript:</strong></p>
+        <ul>
+            <li>Los nombres de variables pueden contener letras, números, _ (underscore) y signo de dólar ($).</li>
+            <li>No pueden comenzar con un número.</li>
+            <li>Deben comenzar en minúsculas.</li>
+            <li>Los nombres son case sensitive (no es lo mismo A que a).</li>
+        </ul>
+        <p>Si bien existe flexibilidad, en la actualidad, se recomienda crear variables con el formato camelCase. Este formato representa una estructura fiel a la que adopta JavaScript como lenguaje de programación. Veamos un ejemplo en el siguiente slide.</p>
+        <p>En JavaScript se estila declarar cada variable o constante utilizando una palabra, en minúsculas, que describa el tipo de datos que almacena. Es posible usar dos o más palabras, en aquellos casos donde una sola no alcance para describir el valor que se almacenará.</p>
+        <p>Cuando se combinen palabras usando el formato camelCase se debe contemplar que, cada palabra adicional tenga su primera inicial en mayúsculas.</p>
+        <p><strong>Ejemplos:</strong></p>
+        <ul>
+            <li><code>userName</code> (válido, usa camelCase)</li>
+            <li><code>totalAmount</code> (válido, describe el contenido)</li>
+            <li><code>$price</code> (válido, usa $)</li>
+            <li><code>1value</code> (inválido, comienza con número)</li>
+            <li><code>getData</code> (inválido, usa verbo, más adecuado para funciones)</li>
+            <li><code>caña</code> (inválido, contiene ñ)</li>
+        </ul>
+        <p>Evitar la declaración de variables que incluyan:</p>
+        <ul>
+            <li>Verbos en su nombre.</li>
+            <li>Uso de letras con tilde, diéresis, o ñuflos (letra ñ).</li>
+            <li>Primera inicial en mayúsculas (se reserva para la creación de objetos).</li>
+        </ul>
+    </div>
+
+    <div class="slide">
+        <h3>Nombre de proyectos</h3>
+        <p><strong>Reglas para nombrar un proyecto:</strong></p>
+        <ul>
+            <li>Deben ser cortos, descriptivos y únicos.</li>
+            <li>Usar solo letras, números y guiones (-).</li>
+            <li>No deben comenzar con números.</li>
+            <li>Se recomienda usar kebab-case (palabras separadas por guiones).</li>
+            <li>Evitar espacios y caracteres especiales.</li>
+        </ul>
+        <p><strong>Ejemplos:</strong></p>
+        <ul>
+            <li><code>task-manager</code> (válido, corto y descriptivo)</li>
+            <li><code>blog-platform</code> (válido, usa kebab-case)</li>
+            <li><code>2023-project</code> (inválido, comienza con número)</li>
+            <li><code>user_data</code> (inválido, usa underscore en lugar de guiones)</li>
+            <li><code>my project</code> (inválido, contiene espacio)</li>
+        </ul>
+    </div>
+
+    <div class="slide">
+        <h3>Nombre de archivos</h3>
+        <p><strong>Reglas para nombrar un archivo:</strong></p>
+        <ul>
+            <li>Usar letras minúsculas y números.</li>
+            <li>Separar palabras con guiones (-), siguiendo kebab-case.</li>
+            <li>No comenzar con números.</li>
+            <li>Evitar espacios y caracteres especiales.</li>
+            <li>Incluir extensión adecuada (ej. .js, .html).</li>
+        </ul>
+        <p><strong>Ejemplos:</strong></p>
+        <ul>
+            <li><code>index.html</code> (válido, simple y con extensión)</li>
+            <li><code>user-profile.js</code> (válido, usa kebab-case)</li>
+            <li><code>style-main.css</code> (válido, descriptivo)</li>
+            <li><code>1script.js</code> (inválido, comienza con número)</li>
+            <li><code>user_data.js</code> (inválido, usa underscore)</li>
+            <li><code>my file.js</code> (inválido, contiene espacio)</li>
+        </ul>
+    </div>
+
+    <div class="slide">
+        <h3>Nombre de funciones</h3>
+        <p><strong>Reglas para nombrar una función:</strong></p>
+        <ul>
+            <li>Deben comenzar en minúsculas y usar camelCase.</li>
+            <li>Deben ser verbos o expresiones que describan la acción (ej. getData).</li>
+            <li>No usar guiones ni números al inicio.</li>
+            <li>Evitar tildes, diéresis o ñ.</li>
+        </ul>
+        <p><strong>Ejemplos:</strong></p>
+        <ul>
+            <li><code>calculateTotal</code> (válido, describe acción)</li>
+            <li><code>fetchUserData</code> (válido, usa camelCase)</li>
+            <li><code>updateProfile</code> (válido, claro y descriptivo)</li>
+            <li><code>get_data</code> (inválido, usa guiones)</li>
+            <li><code>1startProcess</code> (inválido, comienza con número)</li>
+            <li><code>procesarÁrea</code> (inválido, contiene tilde)</li>
+        </ul>
+    </div>
+
+    <div class="slide">
+        <h3>Nombre de clases</h3>
+        <p><strong>Reglas para nombrar una clase:</strong></p>
+        <ul>
+            <li>Deben comenzar con mayúscula y usar PascalCase.</li>
+            <li>Deben ser nombres de sustantivos que representen el objeto (ej. UserProfile).</li>
+            <li>No usar guiones ni números al inicio.</li>
+            <li>Evitar tildes, diéresis o ñ.</li>
+        </ul>
+        <p><strong>Ejemplos:</strong></p>
+        <ul>
+            <li><code>UserProfile</code> (válido, usa PascalCase)</li>
+            <li><code>DatabaseConnection</code> (válido, describe el objeto)</li>
+            <li><code>ShoppingCart</code> (válido, claro y descriptivo)</li>
+            <li><code>user-profile</code> (inválido, usa guiones)</li>
+            <li><code>1Product</code> (inválido, comienza con número)</li>
+            <li><code>CiudadPequeña</code> (inválido, contiene ñ)</li>
+        </ul>
+    </div>
+
+    <img src="https://via.placeholder.com/50" alt="Avatar" class="avatar">
+</body>
+</html>

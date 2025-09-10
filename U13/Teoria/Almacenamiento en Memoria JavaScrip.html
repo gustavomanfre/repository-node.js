@@ -1,0 +1,649 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagrama - Almacenamiento en Memoria JavaScript</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #1e3c72 0%, #2a5298 50%, #4f8fd7 100%);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .code-example {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 30px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            border: 2px solid #333;
+        }
+
+        .code-title {
+            color: #00aaff;
+            margin-bottom: 15px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .variable-declaration {
+            color: #ff6b6b;
+        }
+
+        .variable-name {
+            color: #4ecdc4;
+        }
+
+        .variable-value {
+            color: #ffe66d;
+        }
+
+        .memory-diagram {
+            display: grid;
+            grid-template-columns: 200px 300px 1fr;
+            gap: 30px;
+            margin: 40px 0;
+            min-height: 700px;
+        }
+
+        .call-stack, .stack-memory, .heap-space {
+            border: 3px solid #1e3c72;
+            border-radius: 12px;
+            padding: 20px;
+            background: white;
+        }
+
+        .memory-section-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #1e3c72;
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .call-stack {
+            background: linear-gradient(180deg, #e8f2ff 0%, #f0f8ff 100%);
+        }
+
+        .stack-memory {
+            background: linear-gradient(180deg, #fff8e8 0%, #fff5f0 100%);
+        }
+
+        .heap-space {
+            background: linear-gradient(180deg, #f0fff0 0%, #f8fff8 100%);
+            position: relative;
+        }
+
+        .function-frame {
+            background: rgba(30, 60, 114, 0.1);
+            border: 2px solid #1e3c72;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+            text-align: center;
+            font-weight: bold;
+            color: #1e3c72;
+            font-size: 0.9rem;
+        }
+
+        .stack-slot {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .stack-slot.primitive {
+            border-left: 4px solid #27ae60;
+        }
+
+        .stack-slot.reference {
+            border-left: 4px solid #e74c3c;
+        }
+
+        .memory-address {
+            font-family: 'Courier New', monospace;
+            color: #666;
+            font-size: 0.8rem;
+            font-weight: bold;
+            width: 80px;
+            flex-shrink: 0;
+        }
+
+        .memory-content {
+            flex: 1;
+            margin-left: 12px;
+        }
+
+        .variable-label {
+            font-weight: bold;
+            color: #1e3c72;
+            font-size: 0.9rem;
+        }
+
+        .variable-data {
+            font-family: 'Courier New', monospace;
+            color: #27ae60;
+            font-weight: bold;
+            margin-top: 3px;
+        }
+
+        .reference-pointer {
+            color: #e74c3c;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .heap-object {
+            background: rgba(255, 255, 255, 0.9);
+            border: 3px solid #f39c12;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .heap-object::before {
+            content: attr(data-address);
+            position: absolute;
+            top: -15px;
+            left: 15px;
+            background: #f39c12;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .object-title {
+            font-weight: bold;
+            color: #d35400;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .object-property {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .object-property:last-child {
+            border-bottom: none;
+        }
+
+        .property-key {
+            font-weight: bold;
+            color: #34495e;
+        }
+
+        .property-value {
+            font-family: 'Courier New', monospace;
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .string-pool {
+            background: rgba(52, 152, 219, 0.1);
+            border: 2px dashed #3498db;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .string-pool-title {
+            font-weight: bold;
+            color: #2980b9;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .string-item {
+            background: white;
+            border: 1px solid #bdc3c7;
+            border-radius: 20px;
+            padding: 8px 15px;
+            margin: 8px;
+            display: inline-block;
+            font-family: 'Courier New', monospace;
+            color: #2980b9;
+            font-weight: bold;
+        }
+
+        .arrow-line {
+            stroke: #e74c3c;
+            stroke-width: 2;
+            fill: none;
+            marker-end: url(#arrowhead);
+        }
+
+        .dotted-connection {
+            border: 2px dashed #95a5a6;
+            border-radius: 5px;
+            background: rgba(149, 165, 166, 0.1);
+            margin: 10px 0;
+            padding: 8px;
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        .type-legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .primitive-color {
+            background: #27ae60;
+        }
+
+        .reference-color {
+            background: #e74c3c;
+        }
+
+        .object-color {
+            background: #f39c12;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Diagrama Completo: Almacenamiento en Memoria JavaScript</h1>
+            <p>Call Stack, Stack Memory y Heap Space con todos los tipos de datos</p>
+        </div>
+
+        <div class="content">
+            <div class="code-example">
+                <div class="code-title">// Ejemplo completo con todos los tipos de datos</div>
+                <div><span class="variable-declaration">function</span> <span class="variable-name">main</span>() {</div>
+                <div>&nbsp;&nbsp;<span class="code-title">// PRIMITIVOS</span></div>
+                <div>&nbsp;&nbsp;<span class="variable-declaration">let</span> <span class="variable-name">numero</span> = <span class="variable-value">42</span>;</div>
+                <div>&nbsp;&nbsp;<span class="variable-declaration">const</span> <span class="variable-name">texto</span> = <span class="variable-value">"JavaScript"</span>;</div>
+                <div>&nbsp;&nbsp;<span class="variable-declaration">var</span> <span class="variable-name">activo</span> = <span class="variable-value">true</span>;</div>
+                <div>&nbsp;&nbsp;<span class="variable-declaration">let</span> <span class="variable-name">vacio</span> = <span class="variable-value">null</span>;</div>
+                <div>&nbsp;&nbsp;<span class="variable-declaration">let</span> <span class="variable-name">indefinido</span> = <span class="variable-value">undefined</span>;</div>
+                <div>&nbsp;&nbsp;<span class="variable-declaration">const</span> <span class="variable-name">simbolo</span> = <span class="variable-value">Symbol('id')</span>;</div>
+                <br>
+                <div>&nbsp;&nbsp;<span class="code-title">// OBJETOS</span></div>
+                <div>&nbsp;&nbsp;<span class="variable-declaration">const</span> <span class="variable-name">persona</span> = { nombre: <span class="variable-value">"Ana"</span>, edad: <span class="variable-value">25</span> };</div>
+                <div>&nbsp;&nbsp;<span class="variable-declaration">let</span> <span class="variable-name">numeros</span> = [<span class="variable-value">1, 2, 3, 4, 5</span>];</div>
+                <div>&nbsp;&nbsp;<span class="variable-declaration">var</span> <span class="variable-name">saludar</span> = <span class="variable-declaration">function</span>() { <span class="variable-declaration">return</span> <span class="variable-value">"Hola"</span>; };</div>
+                <div>&nbsp;&nbsp;<span class="variable-declaration">const</span> <span class="variable-name">fecha</span> = <span class="variable-declaration">new</span> <span class="variable-value">Date()</span>;</div>
+                <div>}</div>
+            </div>
+
+            <div class="type-legend">
+                <div class="legend-item">
+                    <div class="legend-color primitive-color"></div>
+                    <span><strong>Primitivos:</strong> Valor directo en Stack</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color reference-color"></div>
+                    <span><strong>Referencias:</strong> Apuntan al Heap</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color object-color"></div>
+                    <span><strong>Objetos:</strong> Almacenados en Heap</span>
+                </div>
+            </div>
+
+            <div class="memory-diagram">
+                <!-- Call Stack -->
+                <div class="call-stack">
+                    <div class="memory-section-title">Call Stack</div>
+                    <div class="function-frame">global</div>
+                    <div class="function-frame">main()</div>
+                    <div class="dotted-connection">
+                        Contexto de ejecución<br>
+                        Variables locales →
+                    </div>
+                </div>
+
+                <!-- Stack Memory -->
+                <div class="stack-memory">
+                    <div class="memory-section-title">Stack Memory</div>
+                    
+                    <!-- Primitivos -->
+                    <div class="stack-slot primitive">
+                        <div class="memory-address">0x7ff001</div>
+                        <div class="memory-content">
+                            <div class="variable-label">numero</div>
+                            <div class="variable-data">42</div>
+                        </div>
+                    </div>
+
+                    <div class="stack-slot primitive">
+                        <div class="memory-address">0x7ff002</div>
+                        <div class="memory-content">
+                            <div class="variable-label">texto</div>
+                            <div class="variable-data">"JavaScript" ↗</div>
+                        </div>
+                    </div>
+
+                    <div class="stack-slot primitive">
+                        <div class="memory-address">0x7ff003</div>
+                        <div class="memory-content">
+                            <div class="variable-label">activo</div>
+                            <div class="variable-data">true</div>
+                        </div>
+                    </div>
+
+                    <div class="stack-slot primitive">
+                        <div class="memory-address">0x7ff004</div>
+                        <div class="memory-content">
+                            <div class="variable-label">vacio</div>
+                            <div class="variable-data">null</div>
+                        </div>
+                    </div>
+
+                    <div class="stack-slot primitive">
+                        <div class="memory-address">0x7ff005</div>
+                        <div class="memory-content">
+                            <div class="variable-label">indefinido</div>
+                            <div class="variable-data">undefined</div>
+                        </div>
+                    </div>
+
+                    <div class="stack-slot primitive">
+                        <div class="memory-address">0x7ff006</div>
+                        <div class="memory-content">
+                            <div class="variable-label">simbolo</div>
+                            <div class="variable-data">Symbol(id)</div>
+                        </div>
+                    </div>
+
+                    <!-- Referencias -->
+                    <div class="stack-slot reference">
+                        <div class="memory-address">0x7ff007</div>
+                        <div class="memory-content">
+                            <div class="variable-label">persona</div>
+                            <div class="variable-data"><span class="reference-pointer">→ 0x108001</span></div>
+                        </div>
+                    </div>
+
+                    <div class="stack-slot reference">
+                        <div class="memory-address">0x7ff008</div>
+                        <div class="memory-content">
+                            <div class="variable-label">numeros</div>
+                            <div class="variable-data"><span class="reference-pointer">→ 0x108002</span></div>
+                        </div>
+                    </div>
+
+                    <div class="stack-slot reference">
+                        <div class="memory-address">0x7ff009</div>
+                        <div class="memory-content">
+                            <div class="variable-label">saludar</div>
+                            <div class="variable-data"><span class="reference-pointer">→ 0x108003</span></div>
+                        </div>
+                    </div>
+
+                    <div class="stack-slot reference">
+                        <div class="memory-address">0x7ff010</div>
+                        <div class="memory-content">
+                            <div class="variable-label">fecha</div>
+                            <div class="variable-data"><span class="reference-pointer">→ 0x108004</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Heap Space -->
+                <div class="heap-space">
+                    <div class="memory-section-title">Heap Space</div>
+
+                    <!-- String Pool -->
+                    <div class="string-pool">
+                        <div class="string-pool-title">String Pool</div>
+                        <div class="string-item">"JavaScript"</div>
+                        <div class="string-item">"Ana"</div>
+                        <div class="string-item">"Hola"</div>
+                    </div>
+
+                    <!-- Objeto Persona -->
+                    <div class="heap-object" data-address="0x108001">
+                        <div class="object-title">Object (persona)</div>
+                        <div class="object-property">
+                            <span class="property-key">nombre:</span>
+                            <span class="property-value">"Ana" ↗</span>
+                        </div>
+                        <div class="object-property">
+                            <span class="property-key">edad:</span>
+                            <span class="property-value">25</span>
+                        </div>
+                        <div class="object-property">
+                            <span class="property-key">__proto__:</span>
+                            <span class="property-value">Object.prototype</span>
+                        </div>
+                    </div>
+
+                    <!-- Array -->
+                    <div class="heap-object" data-address="0x108002">
+                        <div class="object-title">Array (numeros)</div>
+                        <div class="object-property">
+                            <span class="property-key">[0]:</span>
+                            <span class="property-value">1</span>
+                        </div>
+                        <div class="object-property">
+                            <span class="property-key">[1]:</span>
+                            <span class="property-value">2</span>
+                        </div>
+                        <div class="object-property">
+                            <span class="property-key">[2]:</span>
+                            <span class="property-value">3</span>
+                        </div>
+                        <div class="object-property">
+                            <span class="property-key">length:</span>
+                            <span class="property-value">5</span>
+                        </div>
+                        <div class="object-property">
+                            <span class="property-key">__proto__:</span>
+                            <span class="property-value">Array.prototype</span>
+                        </div>
+                    </div>
+
+                    <!-- Function -->
+                    <div class="heap-object" data-address="0x108003">
+                        <div class="object-title">Function (saludar)</div>
+                        <div class="object-property">
+                            <span class="property-key">[[Code]]:</span>
+                            <span class="property-value">function() {...}</span>
+                        </div>
+                        <div class="object-property">
+                            <span class="property-key">name:</span>
+                            <span class="property-value">"saludar"</span>
+                        </div>
+                        <div class="object-property">
+                            <span class="property-key">length:</span>
+                            <span class="property-value">0</span>
+                        </div>
+                        <div class="object-property">
+                            <span class="property-key">[[Scope]]:</span>
+                            <span class="property-value">Global</span>
+                        </div>
+                        <div class="object-property">
+                            <span class="property-key">__proto__:</span>
+                            <span class="property-value">Function.prototype</span>
+                        </div>
+                    </div>
+
+                    <!-- Date Object -->
+                    <div class="heap-object" data-address="0x108004">
+                        <div class="object-title">Date (fecha)</div>
+                        <div class="object-property">
+                            <span class="property-key">[[PrimitiveValue]]:</span>
+                            <span class="property-value">1693847520000</span>
+                        </div>
+                        <div class="object-property">
+                            <span class="property-key">getTime:</span>
+                            <span class="property-value">function getTime()</span>
+                        </div>
+                        <div class="object-property">
+                            <span class="property-key">toString:</span>
+                            <span class="property-value">function toString()</span>
+                        </div>
+                        <div class="object-property">
+                            <span class="property-key">__proto__:</span>
+                            <span class="property-value">Date.prototype</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Explicación detallada -->
+            <div style="background: #f8f9ff; border: 2px solid #e0e0e0; border-radius: 12px; padding: 30px; margin: 40px 0;">
+                <h2 style="color: #1e3c72; margin-bottom: 20px;">📋 Explicación del Diagrama</h2>
+                
+                <div style="margin: 20px 0;">
+                    <h3 style="color: #2a5298; margin-bottom: 15px;">🟢 Tipos Primitivos (Stack Memory)</h3>
+                    <ul style="padding-left: 20px; line-height: 1.8;">
+                        <li><strong>number:</strong> Se almacena directamente el valor numérico</li>
+                        <li><strong>string:</strong> Referencia al String Pool (optimización)</li>
+                        <li><strong>boolean:</strong> true/false se almacena directamente</li>
+                        <li><strong>null:</strong> Valor especial que indica "sin valor"</li>
+                        <li><strong>undefined:</strong> Variable declarada pero sin valor asignado</li>
+                        <li><strong>symbol:</strong> Valor único e inmutable</li>
+                    </ul>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <h3 style="color: #2a5298; margin-bottom: 15px;">🔴 Tipos de Referencia (Heap Space)</h3>
+                    <ul style="padding-left: 20px; line-height: 1.8;">
+                        <li><strong>Object:</strong> Propiedades clave-valor, hereda de Object.prototype</li>
+                        <li><strong>Array:</strong> Objeto especial con índices numéricos y propiedad length</li>
+                        <li><strong>Function:</strong> Objeto ejecutable con código, nombre y scope</li>
+                        <li><strong>Date:</strong> Objeto para manejo de fechas con valor primitivo interno</li>
+                    </ul>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <h3 style="color: #2a5298; margin-bottom: 15px;">🔄 String Pool</h3>
+                    <p style="line-height: 1.8;">JavaScript optimiza strings almacenándolos en un pool compartido. Strings idénticos apuntan a la misma ubicación en memoria, ahorrando espacio.</p>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <h3 style="color: #2a5298; margin-bottom: 15px;">🛠️ Flujo de Ejecución de Funciones y Acceso a Variables</h3>
+                    <p style="line-height: 1.8;">Cuando se ejecuta una función en JavaScript, el motor crea un contexto de ejecución que se gestiona en el <strong>Call Stack</strong>. Aquí está el flujo detallado:</p>
+                    <ul style="padding-left: 20px; line-height: 1.8;">
+                        <li><strong>1. Creación del Contexto de Ejecución:</strong> Cuando se llama a <code>main()</code>, se agrega un nuevo marco al Call Stack (como se muestra en la sección Call Stack). Este marco contiene el entorno léxico de la función, que incluye referencias a las variables locales.</li>
+                        <li><strong>2. Resolución de Variables en Stack Memory:</strong> Las variables primitivas (como <code>numero</code>, <code>activo</code>, etc.) se almacenan directamente en el Stack Memory dentro del marco de <code>main()</code>. Cuando la función accede a estas variables, el motor las lee directamente desde las direcciones de memoria correspondientes (e.g., <code>0x7ff001</code> para <code>numero</code>).</li>
+                        <li><strong>3. Acceso a Objetos en Heap Space:</strong> Para variables de referencia (como <code>persona</code>, <code>numeros</code>, <code>saludar</code>, <code>fecha</code>), el Stack Memory contiene punteros (e.g., <code>0x108001</code> para <code>persona</code>). Cuando la función accede a estas variables, el motor sigue el puntero al Heap Space, donde se encuentra el objeto real. Por ejemplo, acceder a <code>persona.nombre</code> implica:
+                            <ul style="padding-left: 20px;">
+                                <li>Leer el puntero <code>0x108001</code> desde el Stack Memory.</li>
+                                <li>Localizar el objeto en el Heap Space en <code>0x108001</code>.</li>
+                                <li>Acceder a la propiedad <code>nombre</code>, que apunta al String Pool para obtener <code>"Ana"</code>.</li>
+                            </ul>
+                        </li>
+                        <li><strong>4. Ejecución de Funciones (e.g., <code>saludar()</code>):</strong> Si <code>main()</code> llama a <code>saludar()</code>, se crea un nuevo marco en el Call Stack. Este marco tiene su propio entorno léxico, pero puede acceder al ámbito global (donde <code>saludar</code> está definido) a través de la cadena de ámbitos (<code>[[Scope]]</code>). El código de la función, almacenado en el Heap Space en <code>0x108003</code>, se ejecuta, y el valor retornado (<code>"Hola"</code>) se obtiene del String Pool.</li>
+                        <li><strong>5. Liberación del Contexto:</strong> Una vez que <code>saludar()</code> termina, su marco se elimina del Call Stack (pop). Cuando <code>main()</code> termina, su marco también se elimina, pero los objetos en el Heap Space permanecen hasta que el recolector de basura los elimina si no hay más referencias.</li>
+                    </ul>
+                    <p style="line-height: 1.8;">Este flujo asegura que las variables primitivas se manejen de manera eficiente en el Stack, mientras que los objetos complejos en el Heap permiten estructuras de datos dinámicas. La cadena de ámbitos garantiza que las funciones puedan acceder a variables definidas en contextos superiores, como el ámbito global.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

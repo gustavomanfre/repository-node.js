@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Defer vs Sin Defer - Presentación</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .presentation-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+        }
+        
+        .slide {
+            padding: 40px;
+            min-height: 100vh;
+            display: none;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .slide.active {
+            display: block;
+        }
+        
+        .slide h1 {
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+            text-align: center;
+            border-bottom: 2px solid #333;
+            padding-bottom: 15px;
+            color: #222;
+        }
+        
+        .slide h2 {
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            color: #444;
+            border-left: 4px solid #666;
+            padding-left: 15px;
+        }
+        
+        .slide h3 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #555;
+        }
+        
+        .slide p, .slide li {
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+            color: #666;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+        
+        .comparison-box {
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .comparison-box.without-defer {
+            border-left: 4px solid #dc3545;
+        }
+        
+        .comparison-box.with-defer {
+            border-left: 4px solid #28a745;
+        }
+        
+        .step {
+            background: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            padding: 12px;
+            margin: 8px 0;
+            font-size: 0.9rem;
+        }
+        
+        .step-number {
+            display: inline-block;
+            background: #666;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 20px;
+            font-size: 0.8rem;
+            margin-right: 10px;
+        }
+        
+        .code-block {
+            background: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        
+        .timeline-visual {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .timeline-bar {
+            height: 30px;
+            border-radius: 5px;
+            margin: 8px 0;
+            position: relative;
+            overflow: hidden;
+            background: #eee;
+            border: 1px solid #ccc;
+        }
+        
+        .timeline-segment {
+            height: 100%;
+            float: left;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .html-parse { background: #6c757d; color: white; }
+        .script-download { background: #fd7e14; color: white; }
+        .script-execute { background: #6f42c1; color: white; }
+        .blocked { background: #dc3545; color: white; }
+        
+        .navigation {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            padding: 10px 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .nav-btn {
+            background: #666;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            margin: 0 5px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        
+        .nav-btn:hover {
+            background: #333;
+        }
+        
+        .nav-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .slide-counter {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 15px;
+            padding: 5px 12px;
+            margin: 0 10px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        ul, ol {
+            padding-left: 25px;
+        }
+        
+        .highlight-box {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .success-box {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        
+        .error-box {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.9rem;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: #f8f9fa;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        @media (max-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .slide {
+                padding: 20px;
+            }
+            
+            .slide h1 {
+                font-size: 1.8rem;
+            }
+            
+            .slide h2 {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: Título -->
+        <div class="slide active">
+            <h1>Atributo defer en HTML</h1>
+            <div style="text-align: center; margin: 50px 0;">
+                <p style="font-size: 1.2rem; color: #555; margin-bottom: 30px;">
+                    Comparación entre scripts con y sin defer
+                </p>
+                <div style="font-size: 0.9rem; color: #777;">
+                    <p>Análisis del comportamiento de carga y ejecución de scripts</p>
+                    <p>Optimización del rendimiento web</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Conceptos básicos -->
+        <div class="slide">
+            <h1>¿Qué es el atributo defer?</h1>
+            
+            <h2>Definición</h2>
+            <p>El atributo <code>defer</code> indica al navegador que debe descargar el script en paralelo con el parseo del HTML, pero ejecutarlo solo después de que el documento esté completamente parseado.</p>
+            
+            <h2>Sintaxis</h2>
+            <div class="code-block">
+&lt;script src="archivo.js" defer&gt;&lt;/script&gt;
+            </div>
+            
+            <h2>Características principales</h2>
+            <ul>
+                <li>Solo funciona con scripts externos (que tienen atributo src)</li>
+                <li>No bloquea el parseo del HTML</li>
+                <li>Mantiene el orden de ejecución entre scripts</li>
+                <li>Garantiza acceso al DOM completo</li>
+            </ul>
+        </div>
+
+        <!-- Slide 3: Comportamiento sin defer -->
+        <div class="slide">
+            <h1>Script sin atributo defer</h1>
+            
+            <div class="code-block">
+&lt;script src="script.js"&gt;&lt;/script&gt;
+            </div>
+            
+            <h2>Proceso de ejecución</h2>
+            <div class="timeline-visual">
+                <h3>Secuencia temporal:</h3>
+                <div class="step">
+                    <span class="step-number">1</span>
+                    HTML se parsea normalmente
+                </div>
+                <div class="step">
+                    <span class="step-number">2</span>
+                    Se encuentra &lt;script&gt; → PARSEO SE DETIENE
+                </div>
+                <div class="step">
+                    <span class="step-number">3</span>
+                    Descarga el archivo script.js
+                </div>
+                <div class="step">
+                    <span class="step-number">4</span>
+                    Ejecuta el script inmediatamente
+                </div>
+                <div class="step">
+                    <span class="step-number">5</span>
+                    Continúa parseando el resto del HTML
+                </div>
+            </div>
+            
+            <div class="error-box">
+                <h3>Problemas potenciales:</h3>
+                <ul>
+                    <li>Bloqueo del renderizado de la página</li>
+                    <li>El DOM puede estar incompleto durante la ejecución</li>
+                    <li>Peor experiencia de usuario por tiempos de carga</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 4: Comportamiento con defer -->
+        <div class="slide">
+            <h1>Script con atributo defer</h1>
+            
+            <div class="code-block">
+&lt;script src="script.js" defer&gt;&lt;/script&gt;
+            </div>
+            
+            <h2>Proceso de ejecución</h2>
+            <div class="timeline-visual">
+                <h3>Secuencia temporal:</h3>
+                <div class="step">
+                    <span class="step-number">1</span>
+                    HTML se parsea normalmente
+                </div>
+                <div class="step">
+                    <span class="step-number">2</span>
+                    Se encuentra &lt;script defer&gt; → Inicia descarga EN PARALELO
+                </div>
+                <div class="step">
+                    <span class="step-number">3</span>
+                    Continúa parseando HTML sin interrupciones
+                </div>
+                <div class="step">
+                    <span class="step-number">4</span>
+                    HTML completamente parseado
+                </div>
+                <div class="step">
+                    <span class="step-number">5</span>
+                    AHORA ejecuta el script descargado
+                </div>
+            </div>
+            
+            <div class="success-box">
+                <h3>Ventajas del defer:</h3>
+                <ul>
+                    <li>No bloquea el parseo del HTML</li>
+                    <li>Mejor rendimiento percibido</li>
+                    <li>Mantiene el orden de ejecución</li>
+                    <li>Acceso garantizado al DOM completo</li>
+                    <li>Descarga paralela optimiza el tiempo</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 5: Comparación visual -->
+        <div class="slide">
+            <h1>Comparación visual de timelines</h1>
+            
+            <div class="comparison-grid">
+                <div class="comparison-box without-defer">
+                    <h3>Sin defer</h3>
+                    <div class="timeline-visual">
+                        <div class="timeline-bar">
+                            <div class="timeline-segment html-parse" style="width: 30%;">HTML</div>
+                            <div class="timeline-segment blocked" style="width: 40%;">BLOQUEADO</div>
+                            <div class="timeline-segment html-parse" style="width: 30%;">HTML</div>
+                        </div>
+                        <div class="timeline-bar">
+                            <div class="timeline-segment" style="width: 30%; background: transparent;"></div>
+                            <div class="timeline-segment script-download" style="width: 20%;">Download</div>
+                            <div class="timeline-segment script-execute" style="width: 20%;">Execute</div>
+                            <div class="timeline-segment" style="width: 30%; background: transparent;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="comparison-box with-defer">
+                    <h3>Con defer</h3>
+                    <div class="timeline-visual">
+                        <div class="timeline-bar">
+                            <div class="timeline-segment html-parse" style="width: 70%;">HTML Parse (continuo)</div>
+                            <div class="timeline-segment script-execute" style="width: 30%;">Execute</div>
+                        </div>
+                        <div class="timeline-bar">
+                            <div class="timeline-segment script-download" style="width: 70%;">Download (paralelo)</div>
+                            <div class="timeline-segment" style="width: 30%; background: transparent;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="highlight-box">
+                <h3>Leyenda:</h3>
+                <div style="display: flex; gap: 20px; flex-wrap: wrap; font-size: 0.85rem;">
+                    <div><span style="background: #6c757d; color: white; padding: 2px 8px; border-radius: 3px;">HTML</span> Parseo HTML</div>
+                    <div><span style="background: #fd7e14; color: white; padding: 2px 8px; border-radius: 3px;">Download</span> Descarga Script</div>
+                    <div><span style="background: #6f42c1; color: white; padding: 2px 8px; border-radius: 3px;">Execute</span> Ejecución Script</div>
+                    <div><span style="background: #dc3545; color: white; padding: 2px 8px; border-radius: 3px;">BLOQUEADO</span> Proceso Bloqueado</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Ejemplo práctico problemático -->
+        <div class="slide">
+            <h1>Ejemplo práctico: Problema sin defer</h1>
+            
+            <h2>HTML</h2>
+            <div class="code-block">
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Mi Página&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1 id="titulo"&gt;Cargando...&lt;/h1&gt;
+    
+    &lt;script src="app.js"&gt;&lt;/script&gt;
+    
+    &lt;div id="contenido"&gt;
+        &lt;p&gt;Este contenido aparece después&lt;/p&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+            </div>
+            
+            <h2>JavaScript (app.js)</h2>
+            <div class="code-block">
+// ERROR: El DOM no está completo aún
+const titulo = document.getElementById('titulo');     // ✓ Existe
+const contenido = document.getElementById('contenido'); // ✗ null
+
+console.log(titulo);    // &lt;h1 id="titulo"&gt;...
+console.log(contenido); // null
+
+// Esto causará error
+contenido.textContent = 'Contenido cargado'; // TypeError
+            </div>
+            
+            <div class="error-box">
+                <strong>Resultado:</strong> Error en la ejecución porque el elemento "contenido" aún no existe en el DOM.
+            </div>
+        </div>
+
+        <!-- Slide 7: Ejemplo práctico solucionado -->
+        <div class="slide">
+            <h1>Ejemplo práctico: Solución con defer</h1>
+            
+            <h2>HTML (con defer)</h2>
+            <div class="code-block">
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Mi Página&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1 id="titulo"&gt;Cargando...&lt;/h1&gt;
+    
+    &lt;script src="app.js" defer&gt;&lt;/script&gt;
+    
+    &lt;div id="contenido"&gt;
+        &lt;p&gt;Este contenido aparece después&lt;/p&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+            </div>
+            
+            <h2>JavaScript (app.js)</h2>
+            <div class="code-block">
+// PERFECTO: El DOM está completamente listo
+const titulo = document.getElementById('titulo');     // ✓ Existe
+const contenido = document.getElementById('contenido'); // ✓ Existe
+
+console.log(titulo);    // &lt;h1 id="titulo"&gt;...
+console.log(contenido); // &lt;div id="contenido"&gt;...
+
+// Esto funciona perfectamente
+titulo.textContent = 'Página Cargada';
+contenido.style.backgroundColor = '#f0f8ff';
+            </div>
+            
+            <div class="success-box">
+                <strong>Resultado:</strong> El script se ejecuta correctamente porque el DOM está completamente parseado.
+            </div>
+        </div>
+
+        <!-- Slide 8: Múltiples scripts -->
+        <div class="slide">
+            <h1>Múltiples scripts con defer</h1>
+            
+            <h2>HTML con múltiples scripts</h2>
+            <div class="code-block">
+&lt;script src="libreria.js" defer&gt;&lt;/script&gt;
+&lt;script src="utils.js" defer&gt;&lt;/script&gt;
+&lt;script src="app.js" defer&gt;&lt;/script&gt;
+            </div>
+            
+            <h2>Comportamiento</h2>
+            <div class="highlight-box">
+                <ol>
+                    <li><strong>Descarga paralela:</strong> Los 3 scripts se descargan simultáneamente</li>
+                    <li><strong>Espera sincronizada:</strong> Todos esperan a que el DOM esté completo</li>
+                    <li><strong>Ejecución ordenada:</strong>
+                        <ul style="margin-top: 10px;">
+                            <li>1º → libreria.js</li>
+                            <li>2º → utils.js (puede usar libreria.js)</li>
+                            <li>3º → app.js (puede usar ambos anteriores)</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+            
+            <div class="success-box">
+                <strong>Ventaja clave:</strong> Máximo paralelismo en descarga + orden garantizado en ejecución + DOM completo disponible.
+            </div>
+        </div>
+
+        <!-- Slide 9: Comparación defer vs async vs normal -->
+        <div class="slide">
+            <h1>Comparación: Normal vs Defer vs Async</h1>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspecto</th>
+                        <th>Normal</th>
+                        <th>Defer</th>
+                        <th>Async</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Bloquea parseo</strong></td>
+                        <td>Sí</td>
+                        <td>No</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Momento de ejecución</strong></td>
+                        <td>Inmediata</td>
+                        <td>Después del DOM</td>
+                        <td>Al terminar descarga</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Orden garantizado</strong></td>
+                        <td>Sí</td>
+                        <td>Sí</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DOM disponible</strong></td>
+                        <td>Parcial</td>
+                        <td>Completo</td>
+                        <td>Parcial</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Descarga paralela</strong></td>
+                        <td>No</td>
+                        <td>Sí</td>
+                        <td>Sí</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="highlight-box">
+                <h3>Recomendaciones de uso:</h3>
+                <ul>
+                    <li><strong>Normal:</strong> Scripts críticos que deben ejecutarse antes del contenido</li>
+                    <li><strong>Defer:</strong> Scripts de aplicación que manipulan el DOM</li>
+                    <li><strong>Async:</strong> Scripts independientes como analytics o widgets</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 10: Casos de uso -->
+        <div class="slide">
+            <h1>Casos de uso recomendados</h1>
+            
+            <div class="comparison-grid">
+                <div class="comparison-box with-defer">
+                    <h3>Usar DEFER para:</h3>
+                    <ul>
+                        <li>Scripts de aplicación principal</li>
+                        <li>Librerías de UI (jQuery, Bootstrap)</li>
+                        <li>Inicialización de componentes</li>
+                        <li>Event listeners para el DOM</li>
+                        <li>Scripts interdependientes</li>
+                        <li>Validación de formularios</li>
+                        <li>Manipulación del DOM</li>
+                    </ul>
+                </div>
+                
+                <div class="comparison-box without-defer">
+                    <h3>NO usar DEFER para:</h3>
+                    <ul>
+                        <li>Scripts de analytics (usar async)</li>
+                        <li>Scripts críticos para renderizado</li>
+                        <li>Polyfills esenciales</li>
+                        <li>Configuración global temprana</li>
+                        <li>Scripts inline (defer no funciona)</li>
+                        <li>Modificaciones dinámicas del &lt;head&gt;</li>
+                        <li>Scripts que otros necesitan inmediatamente</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Resumen final -->
+        <div class="slide">
+            <h1>Resumen y conclusiones</h1>
+            
+            <h2>Puntos clave</h2>
+            <div class="highlight-box">
+                <p><strong>Sin defer:</strong> El navegador se detiene, descarga y ejecuta cada script secuencialmente, bloqueando el renderizado.</p>
+                <p><strong>Con defer:</strong> El navegador descarga scripts en paralelo y los ejecuta solo cuando el DOM está completo.</p>
+            </div>
+            
+            <h2>Beneficios principales</h2>
+            <ul>
+                <li><strong>Mejor rendimiento:</strong> No hay bloqueos durante el parseo</li>
+                <li><strong>Código más confiable:</strong> DOM siempre está disponible</li>
+                <li><strong>Mejor experiencia de usuario:</strong> Carga más rápida</li>
+                <li><strong>Orden mantenido:</strong> Scripts se ejecutan en el orden correcto</li>
+                <li><strong>Optimización de red:</strong> Descargas paralelas</li>
+            </ul>
+            
+            <h2>Recomendación general</h2>
+            <div class="success-box">
+                <p><strong>Usa defer por defecto</strong> para todos los scripts que manipulan el DOM o forman parte de tu aplicación principal. Solo usa scripts sin defer cuando realmente necesites ejecución inmediata.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← Anterior</button>
+        <span class="slide-counter">
+            <span id="currentSlide">1</span> / <span id="totalSlides">11</span>
+        </span>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Siguiente →</button>
+    </div>
+
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('totalSlides').textContent = totalSlides;
+        
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            
+            document.getElementById('currentSlide').textContent = index + 1;
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+        }
+        
+        function changeSlide(direction) {
+            const newIndex = currentSlideIndex + direction;
+            if (newIndex >= 0 && newIndex < totalSlides) {
+                currentSlideIndex = newIndex;
+                showSlide(currentSlideIndex);
+            }
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+        
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>

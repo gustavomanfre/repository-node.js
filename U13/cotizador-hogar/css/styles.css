@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,600;0,700;1,100;1,300;1,400;1,500;1,600;1,700&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css');
+@import url('https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css');
+
+* {
+    font-family: 'Roboto', Arial, Helvetica, sans-serif;
+}
+html{
+    min-height: 100%; /* Asegura que el elemento html ocupe al menos el 100% de la altura de la ventana del navegador */
+    background-color: rgb(126, 88, 161); /* Establece un color de fondo para el elemento html, que se aplicará a toda la página */
+}
+
+h1 {
+    font-weight: 400; /*Establece el grosor de la fuente en un valor normal (equivalente a "normal" o "regular").*/
+    color: whitesmoke; /* Cambia el color del encabezado principal */
+}
+
+.center {
+    text-align: center; /*El texto dentro de ese elemento aparecerá centrado respecto a su contenedor.*/
+}
+
+.separate {
+    margin: 20px; /*Añade un margen de 20 píxeles alrededor del elemento, separándolo de otros elementos adyacentes.*/
+}
+
+label {
+    font-weight: 400; /* Establece el grosor de la fuente en un valor normal (equivalente a "normal" o "regular"). */
+    color: grey; /* Cambia el color de las etiquetas */;
+}
+
+/* important es una palabra clave en CSS que se utiliza para dar prioridad a una regla específica, asegurando que se aplique incluso si hay otras reglas que podrían entrar en conflicto. */
+select,input {
+    min-width: 50% !important; /* Establece un ancho mínimo del 50% para los elementos de entrada y selección, asegurando que no sean mas chicos que el 50% de su contenedor */
+    width: 70% !important; /* Establece un ancho del 70% para los elementos de entrada y selección, ocupando el 70% del ancho de su contenedor */
+}  
+
+.text-red {
+    color: red !important;
+}
+
+button:hover {
+    color: whitesmoke !important;/* Cambia el color del texto del botón al pasar el cursor sobre él */
+    background-color: blueviolet !important;
+}
+
+button:active {
+    background-color: black !important; /* Cambia el color de fondo del botón cuando se hace clic en él */
+}
+
+.price {
+    color: blueviolet;/* Cambia el color del texto de los precios a azul violeta */
+    font-size: x-large;/* Aumenta el tamaño de la fuente de los precios a un tamaño grande,  El valor x-large es relativo y suele ser más grande que el tamaño de fuente normal, pero no tan grande como otros valores como xx-large*/
+    font-weight: 700;/* Establece el grosor de la fuente de los precios a 700, lo que generalmente indica un texto más grueso o negrita */
+}
+
+.div-quote {
+    background-color: white;/* Cambia el color de fondo del contenedor de la cotización a blanco */
+    margin-left: 5%;/* Añade un margen izquierdo del 5% al contenedor de la cotización, separándolo del borde izquierdo de su contenedor principal */
+    margin-right: 5%;/* Añade un margen derecho del 5% al contenedor de la cotización, separándolo del borde derecho de su contenedor principal */
+    padding: 10px;/* Añade un relleno de 10 píxeles alrededor del contenido del contenedor de la cotización, creando espacio entre el borde del contenedor y su contenido */
+    border-color: whitesmoke;/* Cambia el color del borde del contenedor de la cotización a blanco */
+    box-shadow: 26px 28px 15px -8px rgba(0,0,0,0.15);/* Añade una sombra al contenedor de la cotización, creando un efecto de profundidad. Los valores especifican el desplazamiento horizontal, el desplazamiento vertical, el desenfoque y la extensión de la sombra */
+    border-radius: 0.7rem;/* Añade un radio de borde de 0.7rem al contenedor de la cotización, lo que redondea las esquinas del contenedor */
+}
+
