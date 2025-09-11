@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node.js: Let, Const y Hoisting</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .presentation-container {
+            width: 95%;
+            max-width: 1200px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .slide {
+            display: none;
+            padding: 40px;
+            min-height: 600px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: linear-gradient(90deg, #1e3c72 0%, #2a5298 50%, #4f8fd7 100%);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            background: white;
+            color: #1e3c72;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .slide-title {
+            font-size: 2.5rem;
+            color: #1e3c72;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        .concept-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .concept-card:hover {
+            border-color: #1e3c72;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            transform: translateY(-4px);
+        }
+
+        .concept-card h3 {
+            color: #1e3c72;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+
+        .concept-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .example-box {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .example-title {
+            color: #00aaff;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .error-highlight {
+            background-color: #ff4444;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .correct-highlight {
+            background-color: #44ff44;
+            color: black;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .warning-box h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-box {
+            background: #f8f9ff;
+            border-left: 4px solid #1e3c72;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .comparison-box h4 {
+            color: #1e3c72;
+            margin-bottom: 10px;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 30px;
+            background: #f5f5f5;
+        }
+
+        .nav-btn {
+            padding: 12px 24px;
+            background: #1e3c72;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: #2a5298;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .nav-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .slide-counter {
+            text-align: center;
+            color: #666;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+
+        .theory-section {
+            background: linear-gradient(45deg, #f8f9ff, #e6f3ff);
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 5px solid #1e3c72;
+        }
+
+        .theory-section h4 {
+            color: #1e3c72;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="header">
+            <h1>Node.js: Let, Const y Hoisting</h1>
+            <div class="logo">Node.js Backend</div>
+        </div>
+
+        <!-- Slide 1: Let y Block Scope -->
+        <div class="slide active">
+            <h2 class="slide-title">Let y Block Scope</h2>
+            
+            <div class="theory-section">
+                <h4>Fundamento Teórico:</h4>
+                <p><strong>Block Scope (Ámbito de Bloque):</strong> Es un concepto donde las variables solo existen dentro del bloque de código donde fueron declaradas (entre llaves {}).</p>
+                <p><strong>Problema con var:</strong> Las variables declaradas con `var` tienen "function scope" o "global scope", no "block scope", lo que causa problemas de scope.</p>
+            </div>
+
+            <div class="concept-card">
+                <h3>Problema Original con var</h3>
+                <div class="example-box">
+                    <div class="example-title">// Problema: var no respeta block scope</div>
+                    <div>for(var i=0; i&lt;5; i++) {</div>
+                    <div>&nbsp;&nbsp;console.log(i); // 0, 1, 2, 3, 4</div>
+                    <div>}</div>
+                    <div>console.log(i); // <span class="error-highlight">5 - ¡La variable existe fuera del for!</span></div>
+                </div>
+                <p><strong>¿Por qué ocurre esto?</strong> Porque `var` tiene "function scope", no "block scope". La variable `i` se comporta como si estuviera declarada al inicio de la función que contiene el for.</p>
+            </div>
+
+            <div class="concept-card">
+                <h3>Solución con let</h3>
+                <div class="example-box">
+                    <div class="example-title">// Solución: let respeta block scope</div>
+                    <div>for(let i=0; i&lt;5; i++) {</div>
+                    <div>&nbsp;&nbsp;console.log(i); // 0, 1, 2, 3, 4</div>
+                    <div>}</div>
+                    <div>console.log(i); // <span class="correct-highlight">ReferenceError: i is not defined</span></div>
+                </div>
+                <p><strong>¿Por qué funciona?</strong> `let` introduce el "block scope", limitando la existencia de la variable solo al bloque donde fue declarada.</p>
+            </div>
+
+            <div class="warning-box">
+                <h4>🔍 Análisis Crítico del Documento:</h4>
+                <p>El documento está correcto en este ejemplo. El concepto de block scope está bien explicado y el ejemplo demuestra claramente la diferencia entre `var` y `let`.</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Const -->
+        <div class="slide">
+            <h2 class="slide-title">Const - Variables Inmutables</h2>
+
+            <div class="theory-section">
+                <h4>Fundamento Teórico:</h4>
+                <p><strong>Inmutabilidad de referencia:</strong> `const` crea una variable cuya referencia no puede ser reasignada después de su inicialización.</p>
+                <p><strong>Importante:</strong> No confundir inmutabilidad de referencia con inmutabilidad del contenido.</p>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ Error Encontrado en el Documento:</h4>
+                <p>El documento muestra <span class="error-highlight">const PI = 3.1515926</span> - El valor de PI está mal. Pi = 3.14159265...</p>
+            </div>
+
+            <div class="concept-card">
+                <h3>Comparación: var, let, const</h3>
+                <div class="example-box">
+                    <div class="example-title">// Reasignación con diferentes declaradores</div>
+                    <div>var PI = 3.14159;</div>
+                    <div>PI = 2.71; // <span class="correct-highlight">✓ Permitido</span></div>
+                    <div>console.log(PI); // 2.71</div>
+                    <div></div>
+                    <div>let E = 2.71828;</div>
+                    <div>E = 3.14; // <span class="correct-highlight">✓ Permitido</span></div>
+                    <div>console.log(E); // 3.14</div>
+                    <div></div>
+                    <div>const GRAVEDAD = 9.8;</div>
+                    <div>GRAVEDAD = 10; // <span class="error-highlight">✗ TypeError: Assignment to constant variable</span></div>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>Concepto Importante: Inmutabilidad de Referencia vs Contenido</h3>
+                <div class="example-box">
+                    <div class="example-title">// const con objetos - CUIDADO</div>
+                    <div>const persona = { nombre: "Juan", edad: 25 };</div>
+                    <div></div>
+                    <div>// <span class="error-highlight">✗ No puedo reasignar la referencia</span></div>
+                    <div>persona = { nombre: "Ana" }; // TypeError</div>
+                    <div></div>
+                    <div>// <span class="correct-highlight">✓ Pero SI puedo modificar el contenido</span></div>
+                    <div>persona.nombre = "Carlos"; // Permitido</div>
+                    <div>persona.edad = 30; // Permitido</div>
+                    <div>console.log(persona); // { nombre: "Carlos", edad: 30 }</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Scopes en Diferentes Bloques -->
+        <div class="slide">
+            <h2 class="slide-title">Comportamiento en Diferentes Bloques</h2>
+
+            <div class="theory-section">
+                <h4>Fundamento Teórico:</h4>
+                <p><strong>Tipos de Scope:</strong></p>
+                <ul>
+                    <li><strong>Global Scope:</strong> Variable accesible desde cualquier parte del programa</li>
+                    <li><strong>Function Scope:</strong> Variable accesible solo dentro de la función donde fue declarada</li>
+                    <li><strong>Block Scope:</strong> Variable accesible solo dentro del bloque {} donde fue declarada</li>
+                </ul>
+            </div>
+
+            <div class="comparison-grid">
+                <div class="comparison-box">
+                    <h4>1. Bloque Anónimo</h4>
+                    <div class="example-box">
+                        <div class="example-title">// Bloque anónimo {}</div>
+                        <div>{</div>
+                        <div>&nbsp;&nbsp;var a = 5; // Function/Global scope</div>
+                        <div>&nbsp;&nbsp;let b = 6; // Block scope</div>
+                        <div>&nbsp;&nbsp;const c = 7; // Block scope</div>
+                        <div>}</div>
+                        <div>console.log(a); // <span class="correct-highlight">✓ 5</span></div>
+                        <div>console.log(b); // <span class="error-highlight">✗ ReferenceError</span></div>
+                        <div>console.log(c); // <span class="error-highlight">✗ ReferenceError</span></div>
+                    </div>
+                </div>
+
+                <div class="comparison-box">
+                    <h4>2. Bloque Condicional</h4>
+                    <div class="example-box">
+                        <div class="example-title">// Bloque if</div>
+                        <div>if(true) {</div>
+                        <div>&nbsp;&nbsp;var a = 5; // Function/Global scope</div>
+                        <div>&nbsp;&nbsp;let b = 6; // Block scope</div>
+                        <div>&nbsp;&nbsp;const c = 7; // Block scope</div>
+                        <div>}</div>
+                        <div>console.log(a); // <span class="correct-highlight">✓ 5</span></div>
+                        <div>console.log(b); // <span class="error-highlight">✗ ReferenceError</span></div>
+                        <div>console.log(c); // <span class="error-highlight">✗ ReferenceError</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>3. Bloque Funcional</h3>
+                <div class="example-box">
+                    <div class="example-title">// Function scope - TODOS se comportan igual</div>
+                    <div>function miFuncion() {</div>
+                    <div>&nbsp;&nbsp;var a = 5; // Function scope</div>
+                    <div>&nbsp;&nbsp;let b = 6; // Function scope (también block scope)</div>
+                    <div>&nbsp;&nbsp;const c = 7; // Function scope (también block scope)</div>
+                    <div>}</div>
+                    <div>miFuncion();</div>
+                    <div>console.log(a); // <span class="error-highlight">✗ ReferenceError</span></div>
+                    <div>console.log(b); // <span class="error-highlight">✗ ReferenceError</span></div>
+                    <div>console.log(c); // <span class="error-highlight">✗ ReferenceError</span></div>
+                </div>
+                <p><strong>¿Por qué todos dan error?</strong> Porque las funciones crean su propio scope. Ninguna variable declarada dentro de una función es accesible desde fuera, independientemente de si usamos var, let o const.</p>
+            </div>
+        </div>
+
+        <!-- Slide 4: Hoisting -->
+        <div class="slide">
+            <h2 class="slide-title">Hoisting - Concepto Fundamental</h2>
+
+            <div class="theory-section">
+                <h4>Fundamento Teórico del Hoisting:</h4>
+                <p><strong>Hoisting:</strong> Es un comportamiento de JavaScript donde las declaraciones de variables y funciones son "movidas" conceptualmente al inicio de su scope antes de la ejecución del código.</p>
+                <p><strong>Importante:</strong> Solo se "iza" la declaración, NO la inicialización.</p>
+            </div>
+
+            <div class="concept-card">
+                <h3>Hoisting con var - Ejemplo del Documento</h3>
+                <div class="example-box">
+                    <div class="example-title">// Código como lo escribimos</div>
+                    <div>saludo = 'hola!';</div>
+                    <div>saludar();</div>
+                    <div></div>
+                    <div>function saludar() {</div>
+                    <div>&nbsp;&nbsp;saludo2 = 'que tal';</div>
+                    <div>&nbsp;&nbsp;console.log(saludo + ' ' + saludo2); // "hola! que tal"</div>
+                    <div>&nbsp;&nbsp;var saludo2;</div>
+                    <div>}</div>
+                    <div>var saludo;</div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-title">// Como JavaScript lo interpreta (hoisting)</div>
+                    <div>var saludo; // Declaración izada</div>
+                    <div></div>
+                    <div>function saludar() { // Función izada completa</div>
+                    <div>&nbsp;&nbsp;var saludo2; // Declaración izada</div>
+                    <div>&nbsp;&nbsp;saludo2 = 'que tal';</div>
+                    <div>&nbsp;&nbsp;console.log(saludo + ' ' + saludo2);</div>
+                    <div>}</div>
+                    <div></div>
+                    <div>saludo = 'hola!'; // Inicialización en su lugar</div>
+                    <div>saludar();</div>
+                </div>
+            </div>
+
+            <div class="concept-card">
+                <h3>¿Por qué let y const NO tienen hoisting?</h3>
+                <div class="example-box">
+                    <div class="example-title">// Temporal Dead Zone (TDZ)</div>
+                    <div>console.log(miVar); // <span class="correct-highlight">undefined (hoisting)</span></div>
+                    <div>console.log(miLet); // <span class="error-highlight">ReferenceError (TDZ)</span></div>
+                    <div>console.log(miConst); // <span class="error-highlight">ReferenceError (TDZ)</span></div>
+                    <div></div>
+                    <div>var miVar = "Soy var";</div>
+                    <div>let miLet = "Soy let";</div>
+                    <div>const miConst = "Soy const";</div>
+                </div>
+                <p><strong>Temporal Dead Zone (TDZ):</strong> Es el período desde el inicio del scope hasta que se declara la variable. Durante este tiempo, la variable existe pero no puede ser accedida.</p>
+            </div>
+        </div>
+
+        <!-- Slide 5: Variables Globales Accidentales -->
+        <div class="slide">
+            <h2 class="slide-title">Variables Globales Accidentales y 'use strict'</h2>
+
+            <div class="theory-section">
+                <h4>Fundamento Teórico:</h4>
+                <p><strong>Variables Globales Accidentales:</strong> JavaScript permite crear variables sin declararlas explícitamente, lo que las convierte automáticamente en variables globales.</p>
+                <p><strong>'use strict':</strong> Modo estricto que previene errores comunes y hace que JavaScript sea más seguro.</p>
+            </div>
+
+            <div class="concept-card">
+                <h3>Problema: Variables Globales Accidentales</h3>
+                <div class="example-box">
+                    <div class="example-title">// Sin 'use strict' - Peligro</div>
+                    <div>function programa() {</div>
+                    <div>&nbsp;&nbsp;clave = 1234; // <span class="error-highlight">¡Olvido declarar var/let/const!</span></div>
+                    <div>}</div>
+                    <div></div>
+                    <div>programa();</div>
+                    <div>console.log(clave); // <span class="error-highlight">1234 - ¡Variable global accidental!</span></div>
+                </div>
+                <p><strong>¿Por qué es peligroso?</strong> Crea variables globales sin que nos demos cuenta, puede causar conflictos y bugs difíciles de encontrar.</p>
+            </div>
+
+            <div class="concept-card">
+                <h3>Solución: 'use strict'</h3>
+                <div class="example-box">
+                    <div class="example-title">// Con 'use strict' - Seguro</div>
+                    <div>'use strict';</div>
+                    <div></div>
+                    <div>function programa() {</div>
+                    <div>&nbsp;&nbsp;clave = 1234; // <span class="error-highlight">ReferenceError: clave is not defined</span></div>
+                    <div>}</div>
+                    <div></div>
+                    <div>programa(); // Error aquí, no se ejecuta el resto</div>
+                    <div>console.log(clave); // Esta línea nunca se ejecuta</div>
+                </div>
+            </div>
+
+            <div class="comparison-grid">
+                <div class="comparison-box">
+                    <h4>Correcto - Con Declaración</h4>
+                    <div class="example-box">
+                        <div class="example-title">// Buena práctica</div>
+                        <div>function programa() {</div>
+                        <div>&nbsp;&nbsp;let clave = 1234; // <span class="correct-highlight">Declarada correctamente</span></div>
+                        <div>}</div>
+                        <div></div>
+                        <div>programa();</div>
+                        <div>console.log(clave); // <span class="error-highlight">ReferenceError (esperado)</span></div>
+                    </div>
+                </div>
+
+                <div class="comparison-box">
+                    <h4>Beneficios de 'use strict'</h4>
+                    <ul style="color: #666; padding-left: 20px;">
+                        <li>Previene variables globales accidentales</li>
+                        <li>Elimina sintaxis problemática</li>
+                        <li>Hace que los errores silenciosos se conviertan en errores explícitos</li>
+                        <li>Mejora la seguridad del código</li>
+                        <li>Facilita la optimización del motor JavaScript</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← Anterior</button>
+            <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Siguiente →</button>
+        </div>
+        
+        <div class="slide-counter">
+            <span id="slideCounter">1 / 5</span>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+            document.getElementById('slideCounter').textContent = `${currentSlide + 1} / ${totalSlides}`;
+        }
+
+        function changeSlide(n) {
+            if (n === 1 && currentSlide < totalSlides - 1) {
+                showSlide(currentSlide + 1);
+            } else if (n === -1 && currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+        });
+
+        showSlide(0);
+    </script>
+</body>
+</html>
